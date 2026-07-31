@@ -1,0 +1,5 @@
+# TODO: placeholder domain — update the Sitemap line once deployed.
+User-agent: *
+Allow: /
+
+Sitemap: https://mdrayyan.dev/sitemap.xml

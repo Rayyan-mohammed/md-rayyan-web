@@ -1,0 +1,72 @@
+.contact__cta {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(2rem, 5.5vw, 3.6rem);
+  line-height: 1.1;
+  max-width: 16ch;
+  margin-bottom: 44px;
+}
+
+.contact__cta em {
+  font-style: italic;
+}
+
+.contact__subtext {
+  margin-top: -20px;
+  margin-bottom: 44px;
+  max-width: 48ch;
+  font-size: 1.05rem;
+  color: var(--text-dim);
+}
+
+.contact__email {
+  position: relative;
+  display: inline-block;
+  font-size: clamp(1.3rem, 3.4vw, 2rem);
+  color: var(--text);
+  border-bottom: 1px solid var(--border-strong);
+  padding-bottom: 8px;
+  transition: color 0.25s, border-color 0.25s;
+}
+
+.contact__email:hover {
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.contact__toast {
+  position: absolute;
+  top: -34px;
+  left: 0;
+  font-size: 0.78rem;
+  color: var(--green);
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+.contact__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 56px;
+}
+
+.contact__social {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 20px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 0.86rem;
+  color: var(--text-dim);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.contact__social:hover {
+  color: var(--green);
+  border-color: rgba(212, 175, 55, 0.4);
+  background: var(--card);
+}

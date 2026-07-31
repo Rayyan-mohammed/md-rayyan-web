@@ -5,31 +5,31 @@
   color-scheme: dark;
 
   /* surfaces */
-  --bg: #080b12;
-  --bg-2: #0a0f1a;
-  --surface: #0e1524;
-  --surface-2: #121b2c;
+  --bg: #0a0a0a;
+  --bg-2: #060605;
+  --surface: #121110;
+  --surface-2: #17150f;
   --card: rgba(255, 255, 255, 0.025);
-  --card-hover: rgba(255, 255, 255, 0.045);
-  --border: rgba(148, 163, 184, 0.12);
-  --border-strong: rgba(148, 163, 184, 0.24);
+  --card-hover: rgba(212, 175, 55, 0.05);
+  --border: rgba(212, 175, 55, 0.16);
+  --border-strong: rgba(212, 175, 55, 0.4);
 
   /* text */
-  --text: #f1f5f9;
-  --text-dim: #aab6c8;
-  --muted: #7c8aa0;
+  --text: #f4f0e6;
+  --text-dim: #b6ae9c;
+  --muted: #948c7c;
 
-  /* accents */
-  --green: #4ade80;
-  --green-2: #22c55e;
-  --cyan: #22d3ee;
-  --accent-grad: linear-gradient(135deg, #4ade80 0%, #22d3ee 100%);
-  --glow: rgba(74, 222, 128, 0.4);
-  --glow-cyan: rgba(34, 211, 238, 0.32);
+  /* accents (gold / champagne) */
+  --green: #d4af37;
+  --green-2: #c9a227;
+  --cyan: #f1d78c;
+  --accent-grad: linear-gradient(135deg, #f1d78c 0%, #d4af37 45%, #9c7a1e 100%);
+  --glow: rgba(212, 175, 55, 0.4);
+  --glow-cyan: rgba(241, 215, 140, 0.3);
 
   /* type */
-  --font-head: 'Space Grotesk', system-ui, sans-serif;
-  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-head: 'Playfair Display', 'Georgia', serif;
+  --font-body: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
 
   /* metrics */
@@ -37,7 +37,7 @@
   --radius: 16px;
   --radius-sm: 10px;
   --radius-lg: 22px;
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease: cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 /* ============================================================
@@ -86,7 +86,7 @@ button {
 }
 
 ::selection {
-  background: rgba(74, 222, 128, 0.28);
+  background: rgba(212, 175, 55, 0.28);
   color: #fff;
 }
 
@@ -98,12 +98,12 @@ button {
   background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1c2740;
+  background: #3a3222;
   border-radius: 20px;
   border: 3px solid var(--bg);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2a3a5c;
+  background: #5c4e2a;
 }
 
 /* focus */
@@ -136,27 +136,28 @@ button {
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-family: var(--font-mono);
-  font-size: 0.82rem;
-  letter-spacing: 0.02em;
+  font-size: 0.76rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   color: var(--green);
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 .eyebrow::before {
   content: '';
-  width: 22px;
+  width: 28px;
   height: 1px;
-  background: var(--green);
-  opacity: 0.7;
+  background: var(--accent-grad);
+  opacity: 0.9;
 }
 
 .section-title {
   font-family: var(--font-head);
-  font-weight: 700;
-  font-size: clamp(2rem, 4.4vw, 3rem);
+  font-weight: 600;
+  font-size: clamp(2.1rem, 4.6vw, 3.4rem);
   line-height: 1.08;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .section-sub {
@@ -207,15 +208,15 @@ button {
 }
 
 .btn--primary {
-  background: var(--green);
-  color: #05210f;
+  background: var(--accent-grad);
+  color: #211705;
   font-weight: 600;
-  box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.6), 0 12px 30px -12px var(--glow);
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.6), 0 12px 30px -12px var(--glow);
 }
 .btn--primary:hover {
-  background: #63e894;
-  box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.9), 0 16px 40px -10px var(--glow);
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.9), 0 16px 44px -10px var(--glow);
   transform: translateY(-2px);
+  filter: brightness(1.08);
 }
 
 .btn--ghost {
@@ -248,7 +249,7 @@ button {
 }
 .chip:hover {
   color: var(--green);
-  border-color: rgba(74, 222, 128, 0.4);
+  border-color: rgba(212, 175, 55, 0.45);
 }
 
 /* ============================================================
@@ -270,6 +271,41 @@ button {
 /* ============================================================
    Accessibility: reduced motion
    ============================================================ */
+/* ============================================================
+   Skip link (visible on keyboard focus only)
+   ============================================================ */
+.skip-link {
+  position: fixed;
+  top: -60px;
+  left: 20px;
+  z-index: 300;
+  padding: 12px 20px;
+  background: var(--green);
+  color: #211705;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: top 0.25s var(--ease);
+}
+
+.skip-link:focus-visible {
+  top: 20px;
+}
+
+main:focus-visible {
+  outline: none;
+}
+
+/* ============================================================
+   Custom cursor (enabled via JS on pointer:fine devices)
+   ============================================================ */
+body.has-custom-cursor,
+body.has-custom-cursor a,
+body.has-custom-cursor button {
+  cursor: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

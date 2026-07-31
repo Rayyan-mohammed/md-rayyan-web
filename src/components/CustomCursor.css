@@ -1,0 +1,97 @@
+.cv-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  pointer-events: none;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 10px var(--glow);
+  will-change: transform;
+}
+
+.cv-reticle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 998;
+  pointer-events: none;
+  will-change: transform, width, height;
+  transition: opacity 0.2s ease;
+}
+
+.cv-reticle__corner {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid var(--border-strong);
+  transition: border-color 0.25s var(--ease);
+}
+
+.cv-reticle--active .cv-reticle__corner {
+  border-color: var(--green);
+}
+
+.cv-reticle--pressed .cv-reticle__corner {
+  border-color: var(--cyan);
+}
+
+.cv-reticle__corner--tl {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+}
+.cv-reticle__corner--tr {
+  top: 0;
+  right: 0;
+  border-left: none;
+  border-bottom: none;
+}
+.cv-reticle__corner--bl {
+  bottom: 0;
+  left: 0;
+  border-right: none;
+  border-top: none;
+}
+.cv-reticle__corner--br {
+  bottom: 0;
+  right: 0;
+  border-left: none;
+  border-top: none;
+}
+
+.cv-reticle__tag {
+  position: absolute;
+  top: -30px;
+  left: -1.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  padding: 4px 9px;
+  background: rgba(10, 9, 8, 0.92);
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+}
+
+.cv-reticle__tag-label {
+  color: var(--text);
+}
+
+.cv-reticle__tag-conf {
+  color: var(--green);
+  font-weight: 600;
+}
+
+@media (max-width: 860px) {
+  .cv-cursor-dot,
+  .cv-reticle {
+    display: none;
+  }
+}
