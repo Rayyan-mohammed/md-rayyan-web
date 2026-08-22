@@ -15,21 +15,40 @@ export default function Nav() {
   }, [])
 
   useEffect(() => {
-    const sections = navLinks
-      .map((link) => document.getElementById(link.id))
-      .filter(Boolean)
+    let sectionObserver = null
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveId(entry.target.id)
-        })
-      },
-      { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
-    )
+    const attachToSections = () => {
+      const sections = navLinks
+        .map((link) => document.getElementById(link.id))
+        .filter(Boolean)
 
-    sections.forEach((el) => observer.observe(el))
-    return () => observer.disconnect()
+      if (sections.length === navLinks.length) {
+        mutationObserver.disconnect()
+      }
+
+      sectionObserver?.disconnect()
+      sectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) setActiveId(entry.target.id)
+          })
+        },
+        { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
+      )
+      sections.forEach((el) => sectionObserver.observe(el))
+    }
+
+    // Sections below Hero are lazy-loaded, so they may not exist in the DOM
+    // yet on mount — keep watching until they've all mounted.
+    const mutationObserver = new MutationObserver(attachToSections)
+    mutationObserver.observe(document.body, { childList: true, subtree: true })
+
+    attachToSections()
+
+    return () => {
+      mutationObserver.disconnect()
+      sectionObserver?.disconnect()
+    }
   }, [])
 
   const handleNavClick = () => setMenuOpen(false)
