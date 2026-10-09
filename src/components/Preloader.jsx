@@ -1,81 +1,84 @@
-import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+import { gsap } from '../lib/gsap'
+import { bootProgress, pendingTask, startIntro, rememberLoader } from '../lib/boot'
+import { startScroll, stopScroll } from '../lib/smooth'
 import { profile } from '../data/content'
 import './Preloader.css'
 
-const DURATION = 2000
-const SWITCH_AT = 850
+const MIN_MS = 1800
+const LABELS = {
+  fonts: 'Setting the type',
+  engine: 'Starting the engine',
+  scene: 'Forming particles',
+}
 
-export default function Preloader() {
-  const [visible, setVisible] = useState(true)
-  const [percent, setPercent] = useState(0)
-  const [showName, setShowName] = useState(false)
-  const rafRef = useRef(null)
+// Counter 000 -> 100 driven by real work (fonts, three.js, first scene frame), then lifts like a curtain.
+export default function Preloader({ onDone }) {
+  const rootRef = useRef(null)
+  const numRef = useRef(null)
+  const barRef = useRef(null)
+  const labelRef = useRef(null)
 
   useEffect(() => {
+    stopScroll()
     const start = performance.now()
-    const tick = (now) => {
-      const progress = Math.min((now - start) / DURATION, 1)
-      setPercent(Math.round(progress * 100))
-      if (progress < 1) rafRef.current = requestAnimationFrame(tick)
-    }
-    rafRef.current = requestAnimationFrame(tick)
+    let shown = 0
+    let finished = false
+    let lift = null
 
-    const switchTimer = setTimeout(() => setShowName(true), SWITCH_AT)
-    const timer = setTimeout(() => setVisible(false), DURATION + 150)
-    return () => {
-      clearTimeout(timer)
-      clearTimeout(switchTimer)
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    const tick = () => {
+      const target = Math.min(bootProgress(), (performance.now() - start) / MIN_MS, 1) * 100
+      shown += (target - shown) * 0.1
+      if (target >= 100 && shown > 99.3) shown = 100
+      numRef.current.textContent = String(Math.round(shown)).padStart(3, '0')
+      barRef.current.style.transform = `scaleX(${shown / 100})`
+      const pending = pendingTask()
+      labelRef.current.textContent = pending ? LABELS[pending] : 'Ready'
+
+      if (shown >= 100 && !finished) {
+        finished = true
+        gsap.ticker.remove(tick)
+        lift = gsap
+          .timeline({
+            onComplete: () => {
+              rememberLoader()
+              startScroll()
+              onDone()
+            },
+          })
+          .to('.loader__content', { yPercent: -30, opacity: 0, duration: 0.6, ease: 'power3.in' })
+          .add(startIntro, '>-0.1')
+          .to(rootRef.current, { yPercent: -100, duration: 1.15, ease: 'expo.inOut' }, '<')
+      }
     }
-  }, [])
+    gsap.ticker.add(tick)
+
+    return () => {
+      gsap.ticker.remove(tick)
+      lift?.kill()
+    }
+  }, [onDone])
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          className="preloader"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <motion.div
-            className="preloader__line"
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: 0.9, ease: [0.19, 1, 0.22, 1] }}
-          />
-
-          <div className="preloader__mark-wrap">
-            <AnimatePresence mode="wait">
-              {!showName ? (
-                <motion.div
-                  key="symbol"
-                  className="preloader__mark preloader__mark--symbol mono"
-                  initial={{ opacity: 0, scale: 0.85 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.15, filter: 'blur(8px)' }}
-                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  {profile.initials}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="name"
-                  className="preloader__mark preloader__mark--name"
-                  initial={{ opacity: 0, scale: 0.9, filter: 'blur(8px)' }}
-                  animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  {profile.name.toUpperCase()}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          <span className="preloader__loading mono">Loading — {percent}%</span>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className="loader" ref={rootRef} role="status" aria-label="Loading">
+      <div className="loader__top mono">
+        <span>{profile.name}</span>
+        <span>Portfolio — {new Date().getFullYear()}</span>
+      </div>
+      <div className="loader__content">
+        <p className="loader__label mono" ref={labelRef}>
+          Setting the type
+        </p>
+        <div className="loader__count">
+          <span className="loader__num" ref={numRef}>
+            000
+          </span>
+          <span className="loader__pct">%</span>
+        </div>
+      </div>
+      <div className="loader__bar">
+        <i ref={barRef} />
+      </div>
+    </div>
   )
 }

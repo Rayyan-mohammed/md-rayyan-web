@@ -1,41 +1,51 @@
-import { lazy, Suspense } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { MotionConfig } from 'framer-motion'
 import Preloader from './components/Preloader'
+import ParticleStage from './components/ParticleStage'
 import CustomCursor from './components/CustomCursor'
 import Nav from './components/Nav'
 import Hero from './components/Hero'
-
-const About = lazy(() => import('./components/About'))
-const Experience = lazy(() => import('./components/Experience'))
-const Projects = lazy(() => import('./components/Projects'))
-const Skills = lazy(() => import('./components/Skills'))
-const Awards = lazy(() => import('./components/Awards'))
-const Contact = lazy(() => import('./components/Contact'))
-const Footer = lazy(() => import('./components/Footer'))
+import About from './components/About'
+import Experience from './components/Experience'
+import Projects from './components/Projects'
+import Skills from './components/Skills'
+import Awards from './components/Awards'
+import Contact from './components/Contact'
+import Footer from './components/Footer'
+import { initSmooth, destroySmooth } from './lib/smooth'
+import { loaderSeen, startIntro } from './lib/boot'
+import { prefersReducedMotion } from './lib/gsap'
 
 export default function App() {
+  const [showLoader, setShowLoader] = useState(() => !loaderSeen() && !prefersReducedMotion())
+  const onLoaderDone = useCallback(() => setShowLoader(false), [])
+
+  useEffect(() => {
+    initSmooth()
+    if (!showLoader) startIntro()
+    return destroySmooth
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <MotionConfig reducedMotion="user">
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
-      <Preloader />
+      {showLoader && <Preloader onDone={onLoaderDone} />}
+      <ParticleStage />
       <CustomCursor />
       <Nav />
       <main id="main-content" tabIndex={-1}>
         <Hero />
-        <Suspense fallback={null}>
-          <About />
-          <Experience />
-          <Projects />
-          <Skills />
-          <Awards />
-          <Contact />
-        </Suspense>
+        <About />
+        <Experience />
+        <Projects />
+        <Skills />
+        <Awards />
+        <Contact />
       </main>
-      <Suspense fallback={null}>
-        <Footer />
-      </Suspense>
+      <Footer />
     </MotionConfig>
   )
 }

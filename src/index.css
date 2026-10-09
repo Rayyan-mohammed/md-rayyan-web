@@ -52,8 +52,19 @@
 }
 
 html {
-  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
 
 body {
@@ -192,7 +203,7 @@ button {
   gap: 10px;
   padding: 13px 22px;
   min-height: 46px;
-  border-radius: var(--radius-sm);
+  border-radius: 999px;
   font-family: var(--font-mono);
   font-size: 0.92rem;
   font-weight: 500;
@@ -266,6 +277,43 @@ button {
 .card:hover {
   border-color: var(--border-strong);
   background: var(--card-hover);
+}
+
+/* ============================================================
+   Page structure: sections sit above the fixed particle stage
+   ============================================================ */
+main > section {
+  position: relative;
+  z-index: 2;
+}
+
+main > .section {
+  background: var(--bg);
+}
+
+.theme-light {
+  color-scheme: light;
+  --bg: #efe9db;
+  --bg-2: #e6dfcd;
+  --surface: #f6f1e4;
+  --surface-2: #e9e1cd;
+  --card: rgba(255, 255, 255, 0.55);
+  --card-hover: rgba(255, 255, 255, 0.85);
+  --border: rgba(60, 44, 8, 0.16);
+  --border-strong: rgba(60, 44, 8, 0.4);
+  --text: #16130c;
+  --text-dim: #4b4434;
+  --muted: #7a705c;
+  --green: #8a680b;
+  --cyan: #6f560f;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* generic scroll reveal: GSAP lifts these in staggered batches */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(34px);
 }
 
 /* ============================================================

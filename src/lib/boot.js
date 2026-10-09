@@ -5,6 +5,7 @@ const progressListeners = new Set()
 const introListeners = new Set()
 let introStarted = false
 
+export const pendingTask = () => TASKS.find((t) => !done.has(t))
 export const bootProgress = () => done.size / TASKS.length
 
 export function markReady(task) {
@@ -50,9 +51,11 @@ export function rememberLoader() {
   }
 }
 
+export let fontsReady = Promise.resolve()
+
 // fonts: actually request the faces the design uses, don't just wait on an idle promise
 if (typeof document !== 'undefined' && document.fonts) {
-  Promise.all([
+  fontsReady = Promise.all([
     document.fonts.load('600 1em "Playfair Display"'),
     document.fonts.load('italic 500 1em "Playfair Display"'),
     document.fonts.load('400 1em Inter'),
