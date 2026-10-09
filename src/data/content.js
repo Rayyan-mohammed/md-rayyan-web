@@ -74,16 +74,6 @@ export const heroMetrics = [
   { label: 'Faster Complaint Resolution', value: '40%' },
 ]
 
-export const heroTerminalLines = [
-  { text: '$ python train_dermaegis.py --model efficientnetb3', delay: 0 },
-  { text: 'Epoch  1/30   loss: 1.842   acc: 0.412', delay: 550 },
-  { text: 'Epoch 15/30   loss: 0.512   acc: 0.798', delay: 1000 },
-  { text: 'Epoch 30/30   loss: 0.211   acc: 0.8575', delay: 1450 },
-  { text: '✓ model saved → dermaegis_effnetb3.pt', delay: 1950, done: true },
-]
-
-export const heroConfusion = { tp: 61, fp: 14, fn: 9, tn: 88 }
-
 export const aboutTags = [
   'Computer Vision',
   'LLM Agents / RAG',

@@ -6,32 +6,37 @@ Personal portfolio site for MD Rayyan, AI/ML Engineer & Full-Stack Developer.
 
 ## What this is
 
-A single-page React portfolio, built from scratch (no template) as a fast, animated, content-driven site. All copy — experience, project write-ups, skills, awards — lives in one data file ([src/data/content.js](src/data/content.js)) and is rendered through reusable section components, so updating the site is a content edit, not a layout rewrite.
+A single-page React portfolio built from scratch, with the motion as the main feature: a WebGL particle object that morphs as you scroll, Lenis inertia scrolling wired into GSAP ScrollTrigger, and a pinned sideways project reel. Most copy lives in [src/data/content.js](src/data/content.js).
 
-## Sections
+## Page flow
 
-| Section | What it shows |
+| Section | What happens |
 |---|---|
-| Hero | Rotating role titles, a simulated training-log terminal, and headline metrics (model accuracy, agent accuracy, hallucination rate, resolution-time improvement) |
-| About | Bio, focus tags, and stat counters |
-| Experience | Timeline of leadership/ambassador roles |
-| Projects | 5 featured builds — DermAegis AI (skin lesion classifier), BharatHealth Analyst (LLM agent over public health data), Argus (spot-instance interruption forecasting), PharmaFlow Pro (pharmacy ERP), and an anonymous campus complaint portal |
-| Skills | Grouped skill bars across languages, ML/DL, GenAI/LLMs, data, frameworks, databases, and cloud/DevOps |
-| Awards | Hackathon wins and competition placements |
-| Contact | Direct contact links |
+| Loader | Counter 000 to 100 driven by real work (fonts, three.js, first scene frame), then lifts like a curtain. Shown once per session. |
+| Hero | Dark rounded frame holding a three.js `Points` object (custom `ShaderMaterial`, additive blending, 7k to 14k points depending on device). Wordmark slides up out of overflow masks. The frame expands to full-bleed as you scroll out. |
+| Approach | Five pinned chapters. The particle object bursts and re-forms into brackets, cube, node graph, rings and a heart. Spin follows scroll, pointer adds parallax, headlines reveal line by line, and a fixed rail shows the active chapter. |
+| Statement | A large statement that fills word by word with scroll, plus count-up stats. |
+| About / Experience | Bio with a parallax photo, and a scroll-filled timeline. |
+| Work | Pinned, scrolls sideways on desktop with a progress bar. Cards invert to dark on hover. Stacks vertically on mobile. |
+| Skills | Velocity-reactive marquee and grouped skills. |
+| Awards / Contact | Awards and education, then a giant email and phone link, socials, availability note and live Hyderabad time. |
+
+The header switches between light and dark depending on the section behind it.
 
 ## Notable implementation details
 
-- **Scroll-spy navigation** — the navbar highlights whichever section is in view via `IntersectionObserver`, with a `MutationObserver` fallback so it still attaches correctly to sections that are lazy-loaded in after the initial mount ([src/components/Nav.jsx](src/components/Nav.jsx)).
-- **Code-split sections** — everything below the hero (`About` through `Footer`) is lazy-loaded with `React.lazy` + `Suspense` to keep the initial bundle small.
-- **Custom cursor, preloader, and scroll-triggered animations** via Framer Motion.
-- **SEO basics** — canonical URL, Open Graph/Twitter meta tags, `robots.txt`, and `sitemap.xml`.
+- **Smooth scroll** with Lenis, driven by `gsap.ticker` and synced via `lenis.on('scroll', ScrollTrigger.update)` ([src/lib/smooth.js](src/lib/smooth.js)). In-page links glide.
+- **Particle engine** in [src/lib/ParticleScene.js](src/lib/ParticleScene.js) with shape generators in [src/lib/shapes.js](src/lib/shapes.js). three.js is a lazy chunk, and the scene only renders while the hero and story are visible.
+- **Boot tracker** in [src/lib/boot.js](src/lib/boot.js) so the loader reflects real loading, and the intro plays when it finishes.
+- **Reduced motion** is respected: no smooth scroll, no loader, static particles.
+- **SEO basics**: canonical URL, Open Graph and Twitter meta tags, `robots.txt` and `sitemap.xml`.
 
 ## Stack
 
 - React 18 + Vite
-- Framer Motion (animation)
-- Plain CSS (per-component stylesheets, CSS custom properties for design tokens)
+- GSAP (ScrollTrigger, SplitText), Lenis, three.js
+- Framer Motion for small component transitions
+- Plain CSS with custom properties for design tokens
 - Deployed on Vercel
 
 ## Getting started
