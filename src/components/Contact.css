@@ -1,72 +1,171 @@
-.contact__cta {
+.contact {
+  padding-block: clamp(100px, 16vh, 180px) clamp(60px, 10vh, 110px);
+}
+
+.contact__title {
   font-family: var(--font-head);
-  font-weight: 700;
-  font-size: clamp(2rem, 5.5vw, 3.6rem);
-  line-height: 1.1;
+  font-weight: 600;
+  font-size: clamp(2.4rem, 6.4vw, 6rem);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
   max-width: 16ch;
-  margin-bottom: 44px;
+  text-wrap: balance;
 }
 
-.contact__cta em {
-  font-style: italic;
+.contact__links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: clamp(40px, 7vh, 80px);
 }
 
-.contact__subtext {
-  margin-top: -20px;
-  margin-bottom: 44px;
-  max-width: 48ch;
-  font-size: 1.05rem;
+.contact__big {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+  width: fit-content;
+  max-width: 100%;
+  font-family: var(--font-head);
+  font-weight: 500;
+  font-size: clamp(1.45rem, 5.2vw, 5.4rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  font-variant-numeric: lining-nums;
+  /* underline sweep */
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 2px;
+  padding-bottom: 0.08em;
+  transition: background-size 0.7s var(--ease), color 0.4s var(--ease);
+}
+
+.contact__big:hover {
+  background-size: 100% 2px;
+  color: var(--green);
+}
+
+.contact__big svg {
+  flex: none;
+  width: 0.7em;
+  height: 0.7em;
+  transition: transform 0.5s var(--ease);
+}
+
+.contact__big:hover svg {
+  transform: translate(6px, -6px);
+}
+
+.contact__tel {
+  font-size: clamp(1.2rem, 3.2vw, 3.2rem);
   color: var(--text-dim);
 }
 
-.contact__email {
-  position: relative;
-  display: inline-block;
-  font-size: clamp(1.3rem, 3.4vw, 2rem);
+.contact__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 32px 48px;
+  flex-wrap: wrap;
+  margin-top: clamp(56px, 9vh, 100px);
+  padding-top: 32px;
+  border-top: 1px solid var(--border-strong);
+}
+
+.contact__status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
   color: var(--text);
-  border-bottom: 1px solid var(--border-strong);
-  padding-bottom: 8px;
-  transition: color 0.25s, border-color 0.25s;
 }
 
-.contact__email:hover {
-  color: var(--green);
-  border-color: var(--green);
+.contact__time {
+  margin-top: 8px;
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
-.contact__toast {
-  position: absolute;
-  top: -34px;
-  left: 0;
-  font-size: 0.78rem;
-  color: var(--green);
-  background: var(--surface-2);
-  border: 1px solid var(--border-strong);
-  padding: 5px 10px;
-  border-radius: 999px;
+.contact__dot {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 50%;
+  background: #2f9e44;
+  box-shadow: 0 0 0 0 rgba(47, 158, 68, 0.55);
+  animation: contact-pulse 2s infinite;
+}
+
+@keyframes contact-pulse {
+  70% {
+    box-shadow: 0 0 0 10px rgba(47, 158, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(47, 158, 68, 0);
+  }
 }
 
 .contact__socials {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
-  margin-top: 56px;
+  gap: 10px;
 }
 
 .contact__social {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  padding: 11px 20px;
+  padding: 12px 20px;
   border-radius: 999px;
-  border: 1px solid var(--border);
-  font-size: 0.86rem;
-  color: var(--text-dim);
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  border: 1px solid var(--border-strong);
+  font-size: 0.82rem;
+  color: var(--text);
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.35s var(--ease), border-color 0.35s var(--ease);
+}
+
+/* fill slides up from the bottom on hover */
+.contact__social::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--text);
+  transform: translateY(101%);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  transition: transform 0.5s var(--ease), border-radius 0.5s var(--ease);
 }
 
 .contact__social:hover {
-  color: var(--green);
-  border-color: rgba(212, 175, 55, 0.4);
-  background: var(--card);
+  color: var(--bg);
+  border-color: var(--text);
+}
+
+.contact__social:hover::before {
+  transform: translateY(0);
+  border-radius: 0;
+}
+
+.contact__social svg {
+  width: 16px;
+  height: 16px;
+}
+
+.contact__toast {
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.7rem;
+  white-space: nowrap;
 }

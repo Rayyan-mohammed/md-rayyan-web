@@ -12,12 +12,16 @@ import About from './components/About'
 import Experience from './components/Experience'
 import Projects from './components/Projects'
 import Skills from './components/Skills'
+import Marquee from './components/ui/Marquee'
 import Awards from './components/Awards'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import { initSmooth, destroySmooth } from './lib/smooth'
 import { loaderSeen, startIntro } from './lib/boot'
 import { prefersReducedMotion } from './lib/gsap'
+import { skillGroups } from './data/content'
+
+const marqueeItems = skillGroups.flatMap((g) => g.items.filter((i) => i.level >= 80).map((i) => i.name))
 
 export default function App() {
   const [showLoader, setShowLoader] = useState(() => !loaderSeen() && !prefersReducedMotion())
@@ -46,6 +50,7 @@ export default function App() {
         <About />
         <Experience />
         <Projects />
+        <Marquee items={marqueeItems} />
         <Skills />
         <Awards />
         <Contact />

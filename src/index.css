@@ -368,3 +368,9 @@ body.has-custom-cursor button {
     scroll-behavior: auto !important;
   }
 }
+
+/* split-line masks clip at the line box; give descenders room */
+:is([data-split], .chapter__title) > div {
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+}

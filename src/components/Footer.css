@@ -1,6 +1,8 @@
 .footer {
-  border-top: 1px solid var(--border);
-  padding-block: 28px;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  padding-top: 28px;
 }
 
 .footer__inner {
@@ -19,4 +21,21 @@
 
 .footer__inner a:hover {
   color: var(--green);
+}
+
+/* oversized wordmark cropped by the page edge */
+.footer__word {
+  margin-top: 12px;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(3.6rem, 15.5vw, 15rem);
+  line-height: 0.82;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--border-strong);
+  user-select: none;
+  transform: translateY(18%);
 }
