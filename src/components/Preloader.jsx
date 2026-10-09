@@ -33,7 +33,7 @@ export default function Preloader({ onDone }) {
       numRef.current.textContent = String(Math.round(shown)).padStart(3, '0')
       barRef.current.style.transform = `scaleX(${shown / 100})`
       const pending = pendingTask()
-      labelRef.current.textContent = pending ? LABELS[pending] : 'Ready'
+      labelRef.current.textContent = shown >= 100 ? 'Ready' : pending ? LABELS[pending] : 'Almost there'
 
       if (shown >= 100 && !finished) {
         finished = true

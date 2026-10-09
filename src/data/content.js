@@ -29,6 +29,34 @@ export const navLinks = [
   { id: 'contact', label: 'Contact', number: '06' },
 ]
 
+export const storyChapters = [
+  {
+    title: 'Start with the problem, not the model.',
+    body: 'Every system I build begins with who it is for and what breaks if it is wrong. The architecture comes after that answer.',
+    shape: 'brackets',
+  },
+  {
+    title: 'Measure everything that matters.',
+    body: 'Benchmarks, calibration, uncertainty, bias checks. If I cannot measure it, I do not trust it, and neither should you.',
+    shape: 'cube',
+  },
+  {
+    title: 'Ship it. Do not just demo it.',
+    body: 'FastAPI services, Docker images, live URLs. A notebook is a draft; a deployed product is the work.',
+    shape: 'graph',
+  },
+  {
+    title: 'Learn in public, lead by teaching.',
+    body: 'Running a club, hosting workshops and hackathons taught me the fastest way to understand something is to explain it to 500 people.',
+    shape: 'rings',
+  },
+  {
+    title: 'Build it with care.',
+    body: 'Honest numbers, small details, zero invented claims. The people on the other side of the screen deserve that.',
+    shape: 'heart',
+  },
+]
+
 export const heroMetrics = [
   { label: 'Lesion Classification Accuracy', value: '85.75%' },
   { label: 'Agent Execution Accuracy', value: '90%' },

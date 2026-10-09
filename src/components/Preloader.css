@@ -48,7 +48,7 @@
 .loader__count {
   display: flex;
   align-items: flex-start;
-  line-height: 0.82;
+  line-height: 1;
 }
 
 .loader__num {
@@ -57,6 +57,8 @@
   font-size: clamp(7rem, 26vw, 22rem);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.04em;
+  line-height: 0.9;
+  padding-bottom: 0.08em;
   background: var(--accent-grad);
   -webkit-background-clip: text;
   background-clip: text;

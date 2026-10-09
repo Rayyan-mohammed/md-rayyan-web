@@ -5,6 +5,7 @@ import ParticleStage from './components/ParticleStage'
 import CustomCursor from './components/CustomCursor'
 import Nav from './components/Nav'
 import Hero from './components/Hero'
+import Story from './components/Story'
 import About from './components/About'
 import Experience from './components/Experience'
 import Projects from './components/Projects'
@@ -38,6 +39,7 @@ export default function App() {
       <Nav />
       <main id="main-content" tabIndex={-1}>
         <Hero />
+        <Story />
         <About />
         <Experience />
         <Projects />
