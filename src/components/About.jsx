@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import SectionWrapper from './SectionWrapper'
 import TagPill from './ui/TagPill'
-import StatCounter from './ui/StatCounter'
-import { aboutTags, aboutStats, profile } from '../data/content'
+import { aboutTags, profile } from '../data/content'
 import './About.css'
 
 export default function About() {
@@ -46,12 +45,6 @@ export default function About() {
               </TagPill>
             ))}
           </div>
-
-          <div className="about__stats">
-            {aboutStats.map((stat) => (
-              <StatCounter key={stat.label} {...stat} />
-            ))}
-          </div>
         </motion.div>
 
         <motion.div
@@ -67,6 +60,7 @@ export default function About() {
                 src="/photo.jpg"
                 alt={profile.name}
                 loading="lazy"
+                data-parallax
                 onError={() => setImgError(true)}
                 className="about__photo"
               />

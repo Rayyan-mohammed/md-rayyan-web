@@ -1,78 +1,40 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { navLinks, profile } from '../data/content'
+import Magnetic from './ui/Magnetic'
 import './Nav.css'
 
+// Colour (data-bg) and the active link are driven from PageEffects as sections pass underneath.
 export default function Nav() {
-  const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [activeId, setActiveId] = useState(null)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  useEffect(() => {
-    let sectionObserver = null
-
-    const attachToSections = () => {
-      const sections = navLinks
-        .map((link) => document.getElementById(link.id))
-        .filter(Boolean)
-
-      if (sections.length === navLinks.length) {
-        mutationObserver.disconnect()
-      }
-
-      sectionObserver?.disconnect()
-      sectionObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) setActiveId(entry.target.id)
-          })
-        },
-        { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
-      )
-      sections.forEach((el) => sectionObserver.observe(el))
-    }
-
-    // Sections below Hero are lazy-loaded, so they may not exist in the DOM
-    // yet on mount — keep watching until they've all mounted.
-    const mutationObserver = new MutationObserver(attachToSections)
-    mutationObserver.observe(document.body, { childList: true, subtree: true })
-
-    attachToSections()
-
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
     return () => {
-      mutationObserver.disconnect()
-      sectionObserver?.disconnect()
+      document.body.style.overflow = ''
     }
-  }, [])
-
-  const handleNavClick = () => setMenuOpen(false)
+  }, [menuOpen])
 
   return (
-    <header className="nav">
-      <div className={`nav__bar ${scrolled ? 'nav__bar--scrolled' : ''}`}>
-        <div className="container nav__inner">
-          <a href="#hero" className="nav__logo">
-            {profile.initials}
-          </a>
+    <header className="nav" data-bg="dark">
+      <div className="nav__bar">
+        <a href="#hero" className="nav__logo" onClick={() => setMenuOpen(false)}>
+          <span className="nav__mark">{profile.initials}</span>
+          <span className="nav__name">{profile.name}</span>
+        </a>
 
-          <nav className="nav__links">
-            {navLinks.map((link) => (
-              <a
-                key={link.id}
-                href={`#${link.id}`}
-                className={`nav__link ${activeId === link.id ? 'nav__link--active' : ''}`}
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
+        <nav className="nav__links" aria-label="Primary">
+          {navLinks.map((link) => (
+            <a key={link.id} href={`#${link.id}`} className="nav__link" data-nav={link.id}>
+              {link.label}
+            </a>
+          ))}
+        </nav>
 
+        <div className="nav__end">
+          <Magnetic as="a" href="#contact" className="nav__cta mono" data-nav="contact">
+            Let&apos;s talk
+          </Magnetic>
           <button
             className={`nav__hamburger ${menuOpen ? 'nav__hamburger--open' : ''}`}
             aria-label="Toggle menu"
@@ -81,31 +43,34 @@ export default function Nav() {
           >
             <span />
             <span />
-            <span />
           </button>
         </div>
+      </div>
+
+      <div className="nav__progress" aria-hidden="true">
+        <i />
       </div>
 
       <AnimatePresence>
         {menuOpen && (
           <motion.div
             className="nav__mobile"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{ clipPath: 'inset(0 0 100% 0)' }}
+            animate={{ clipPath: 'inset(0 0 0% 0)' }}
+            exit={{ clipPath: 'inset(0 0 100% 0)' }}
+            transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
           >
-            {navLinks.map((link, i) => (
+            {[...navLinks, { id: 'contact', label: 'Contact' }].map((link, i) => (
               <motion.a
                 key={link.id}
                 href={`#${link.id}`}
                 className="nav__mobile-link"
-                onClick={handleNavClick}
-                initial={{ opacity: 0, y: 20 }}
+                onClick={() => setMenuOpen(false)}
+                initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.05 * i, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.6, delay: 0.25 + 0.06 * i, ease: [0.22, 1, 0.36, 1] }}
               >
-                <span className="mono nav__mobile-number">{link.number}</span>
+                <span className="mono nav__mobile-number">{String(i + 1).padStart(2, '0')}</span>
                 {link.label}
               </motion.a>
             ))}

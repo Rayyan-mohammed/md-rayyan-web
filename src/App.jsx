@@ -6,6 +6,8 @@ import CustomCursor from './components/CustomCursor'
 import Nav from './components/Nav'
 import Hero from './components/Hero'
 import Story from './components/Story'
+import Statement from './components/Statement'
+import PageEffects from './components/PageEffects'
 import About from './components/About'
 import Experience from './components/Experience'
 import Projects from './components/Projects'
@@ -40,6 +42,7 @@ export default function App() {
       <main id="main-content" tabIndex={-1}>
         <Hero />
         <Story />
+        <Statement />
         <About />
         <Experience />
         <Projects />
@@ -48,6 +51,7 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
+      <PageEffects />
     </MotionConfig>
   )
 }

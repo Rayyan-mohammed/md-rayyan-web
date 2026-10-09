@@ -1,38 +1,18 @@
-import { motion } from 'framer-motion'
-
-export default function SectionWrapper({ id, number, title, subtitle, children, className = '' }) {
+export default function SectionWrapper({ id, number, title, subtitle, children, className = '', bg = 'dark' }) {
   return (
-    <section id={id} className={`section ${className}`}>
+    <section id={id} className={`section ${bg === 'light' ? 'theme-light' : ''} ${className}`} data-bg={bg}>
       <div className="container">
         <div className="section-head">
-          <motion.span
-            className="eyebrow mono"
-            initial={{ opacity: 0, x: -12 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          >
+          <span className="eyebrow mono" data-reveal>
             {number} {title}
-          </motion.span>
-          <motion.h2
-            className="section-title"
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-          >
+          </span>
+          <h2 className="section-title" data-split>
             {title}
-          </motion.h2>
+          </h2>
           {subtitle && (
-            <motion.p
-              className="section-sub"
-              initial={{ opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
-            >
+            <p className="section-sub" data-reveal>
               {subtitle}
-            </motion.p>
+            </p>
           )}
         </div>
         {children}

@@ -316,6 +316,10 @@ main > .section {
   transform: translateY(34px);
 }
 
+.js [data-split] {
+  visibility: hidden;
+}
+
 /* ============================================================
    Accessibility: reduced motion
    ============================================================ */

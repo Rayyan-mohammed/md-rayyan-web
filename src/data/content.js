@@ -21,12 +21,22 @@ export const heroRoles = [
 ]
 
 export const navLinks = [
-  { id: 'about', label: 'About', number: '01' },
-  { id: 'experience', label: 'Experience', number: '02' },
-  { id: 'projects', label: 'Projects', number: '03' },
-  { id: 'skills', label: 'Skills', number: '04' },
-  { id: 'awards', label: 'Awards', number: '05' },
-  { id: 'contact', label: 'Contact', number: '06' },
+  { id: 'story', label: 'Approach' },
+  { id: 'about', label: 'About' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'projects', label: 'Work' },
+  { id: 'skills', label: 'Skills' },
+  { id: 'awards', label: 'Awards' },
+]
+
+export const statement =
+  'I build machine learning systems that are measured, explained and deployed. I treat a clean interface as part of the model, and every project ships with its benchmarks, its failure modes and a live URL.'
+
+export const statementStats = [
+  { label: 'Years building', value: 3, suffix: '+' },
+  { label: 'Projects shipped', value: 5, suffix: '' },
+  { label: 'GitHub repos', value: 22, suffix: '+' },
+  { label: 'Students reached', value: 1000, suffix: '+' },
 ]
 
 export const storyChapters = [
@@ -80,13 +90,6 @@ export const aboutTags = [
   'MLOps',
   'Cloud (AWS / GCP)',
   'Full-Stack',
-]
-
-export const aboutStats = [
-  { label: 'GitHub Repos', value: 22, suffix: '+' },
-  { label: 'Projects Shipped', value: 5, suffix: '' },
-  { label: 'Technologies', value: 20, suffix: '+' },
-  { label: 'Core Domains', value: 4, suffix: '' },
 ]
 
 export const experience = [

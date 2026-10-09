@@ -1,39 +1,39 @@
-import { useEffect, useRef, useState } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { useLayoutEffect, useRef } from 'react'
+import { gsap, ScrollTrigger } from '../../lib/gsap'
 
-export default function StatCounter({ value, suffix = '', label, duration = 1.4 }) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-80px' })
-  const [count, setCount] = useState(0)
+// Counts up once, the first time it scrolls into view.
+export default function StatCounter({ value, suffix = '', label, duration = 2 }) {
+  const rootRef = useRef(null)
+  const numRef = useRef(null)
 
-  useEffect(() => {
-    if (!isInView) return
-    let raf
-    const start = performance.now()
-    const tick = (now) => {
-      const progress = Math.min((now - start) / (duration * 1000), 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setCount(Math.round(eased * value))
-      if (progress < 1) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [isInView, value, duration])
+  useLayoutEffect(() => {
+    const state = { v: 0 }
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: rootRef.current,
+        start: 'top 90%',
+        once: true,
+        onEnter: () =>
+          gsap.to(state, {
+            v: value,
+            duration,
+            ease: 'power3.out',
+            onUpdate: () => {
+              numRef.current.textContent = Math.round(state.v).toLocaleString('en-US')
+            },
+          }),
+      })
+    }, rootRef)
+    return () => ctx.revert()
+  }, [value, duration])
 
   return (
-    <motion.div
-      ref={ref}
-      className="stat"
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <div ref={rootRef} className="stat" data-reveal>
       <div className="stat__value mono">
-        {count}
+        <span ref={numRef}>0</span>
         {suffix}
       </div>
       <div className="stat__label">{label}</div>
-    </motion.div>
+    </div>
   )
 }
