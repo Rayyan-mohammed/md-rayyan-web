@@ -16,6 +16,7 @@ export default function Experience() {
   return (
     <SectionWrapper
       id="experience"
+      split
       number="02"
       title="Experience"
       subtitle="Leadership roles where I've translated technical skill into community impact."
@@ -36,7 +37,7 @@ export default function Experience() {
             <div className="timeline__content">
               <div className="timeline__header">
                 <h3 className="timeline__title">
-                  {role.title} <span className="timeline__org">— {role.org}</span>
+                  {role.title} <span className="timeline__org">{role.org}</span>
                 </h3>
                 <span className="timeline__date mono">{role.date}</span>
               </div>

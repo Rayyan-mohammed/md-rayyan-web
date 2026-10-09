@@ -103,7 +103,7 @@ export default function Story() {
         endTrigger: root,
         start: 'top top',
         end: 'bottom top',
-        onUpdate: (self) => stage.setSpin(self.progress * Math.PI * 5),
+        onUpdate: (self) => stage.setSpin(self.progress * Math.PI * 1.5),
         onToggle: (self) => stage.setActive(self.isActive),
       })
 
@@ -144,6 +144,11 @@ export default function Story() {
               </article>
             ))}
           </div>
+          {active >= 0 && (
+            <span className="story__ghost" key={active} aria-hidden="true">
+              {pad(active + 1)}
+            </span>
+          )}
           <p className="story__hud mono" aria-hidden="true">
             shape · {active >= 0 ? storyChapters[active].shape : '—'}
           </p>

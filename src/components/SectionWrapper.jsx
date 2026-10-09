@@ -1,6 +1,10 @@
-export default function SectionWrapper({ id, number, title, subtitle, children, className = '', bg = 'dark' }) {
+export default function SectionWrapper({ id, number, title, subtitle, children, className = '', bg = 'dark', split = false }) {
   return (
-    <section id={id} className={`section ${bg === 'light' ? 'theme-light' : ''} ${className}`} data-bg={bg}>
+    <section
+      id={id}
+      className={`section ${split ? 'section--split' : ''} ${bg === 'light' ? 'theme-light' : ''} ${className}`}
+      data-bg={bg}
+    >
       <div className="container">
         <div className="section-head">
           <span className="eyebrow mono" data-reveal>

@@ -70,14 +70,14 @@ export function brackets(n) {
     while (k < segs.length - 1 && pick > lens[k]) pick -= lens[k++]
     const [a, b, c, d] = segs[k]
     const t = rnd()
-    const thick = 0.07
+    const thick = 0.09
     return [a + (c - a) * t + gauss() * thick, b + (d - b) * t + gauss() * thick, (rnd() - 0.5) * 0.45]
   })
 }
 
 // 02: cube, edges plus faint faces
 export function cube(n) {
-  const s = 1.15
+  const s = 1.0
   const corners = []
   for (let x = -1; x <= 1; x += 2) for (let y = -1; y <= 1; y += 2) for (let z = -1; z <= 1; z += 2) corners.push([x, y, z])
   const edges = []
@@ -89,7 +89,7 @@ export function cube(n) {
     })
   )
   return fill(n, () => {
-    if (rnd() < 0.68) {
+    if (rnd() < 0.6) {
       const [a, b] = edges[(rnd() * edges.length) | 0]
       const t = rnd()
       return [
@@ -110,7 +110,7 @@ export function cube(n) {
 export function nodeGraph(n) {
   const r = mulberry(7)
   const layers = [3, 5, 5, 3]
-  const xs = [-1.7, -0.6, 0.6, 1.7]
+  const xs = [-1.8, -0.62, 0.62, 1.8]
   const nodes = layers.map((count, l) =>
     Array.from({ length: count }, () => [xs[l], (r() * 2 - 1) * 1.15, (r() * 2 - 1) * 0.9])
   )
@@ -118,7 +118,7 @@ export function nodeGraph(n) {
   for (let l = 0; l < layers.length - 1; l++) nodes[l].forEach((a) => nodes[l + 1].forEach((b) => edges.push([a, b])))
   const flat = nodes.flat()
   return fill(n, () => {
-    if (rnd() < 0.7) {
+    if (rnd() < 0.55) {
       const [a, b] = edges[(rnd() * edges.length) | 0]
       const t = rnd()
       return [
@@ -129,7 +129,7 @@ export function nodeGraph(n) {
     }
     const c = flat[(rnd() * flat.length) | 0]
     const o = inSphere()
-    return [c[0] + o[0] * 0.13, c[1] + o[1] * 0.13, c[2] + o[2] * 0.13]
+    return [c[0] + o[0] * 0.2, c[1] + o[1] * 0.2, c[2] + o[2] * 0.2]
   })
 }
 

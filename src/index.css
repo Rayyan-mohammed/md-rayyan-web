@@ -140,8 +140,8 @@ button {
 }
 
 .section-head {
-  max-width: 640px;
-  margin-bottom: 56px;
+  max-width: 760px;
+  margin-bottom: clamp(44px, 7vh, 72px);
 }
 
 .eyebrow {
@@ -166,7 +166,7 @@ button {
 .section-title {
   font-family: var(--font-head);
   font-weight: 600;
-  font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+  font-size: clamp(2.6rem, 6.4vw, 5.4rem);
   line-height: 1.08;
   letter-spacing: -0.01em;
 }

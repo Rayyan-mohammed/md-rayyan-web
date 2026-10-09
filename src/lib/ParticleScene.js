@@ -50,7 +50,7 @@ const VERT = /* glsl */ `
     float size = uSize * (0.55 + aRand.w * 1.1) * (1.0 + b * 0.35);
     gl_PointSize = size * uPx * (7.0 / -mv.z);
 
-    vAlpha = (0.32 + 0.68 * aRand.w) * (0.75 + 0.25 * sin(uTime + aRand.x * 30.0));
+    vAlpha = (0.55 + 0.45 * aRand.w) * (0.8 + 0.2 * sin(uTime + aRand.x * 30.0));
     vHue = aRand.z;
   }
 `
@@ -132,12 +132,12 @@ export class ParticleScene {
     this.uniforms = {
       uMix: { value: 0 },
       uTime: { value: 0 },
-      uSize: { value: 2.3 },
+      uSize: { value: 3.3 },
       uPx: { value: 1 },
       uBurst: { value: 0.4 },
       uOpacity: { value: 0 },
-      uColA: { value: new Color('#b8921f') },
-      uColB: { value: new Color('#fff1c4') },
+      uColA: { value: new Color('#d4a72c') },
+      uColB: { value: new Color('#fff6d6') },
     }
     const mat = new ShaderMaterial({
       uniforms: this.uniforms,
@@ -170,7 +170,7 @@ export class ParticleScene {
     this.uniforms.uPx.value = dpr
     const halfH = Math.tan((45 * Math.PI) / 360) * 7
     const halfW = halfH * this.camera.aspect
-    if (this.camera.aspect > 1.1) this.target = { x: halfW * 0.42, y: 0, s: 1.12 }
+    if (this.camera.aspect > 1.1) this.target = { x: halfW * 0.36, y: 0, s: 1.1 }
     else this.target = { x: 0, y: halfH * 0.32, s: 0.82 }
     if (this.reduced || !this.running) {
       this.group.position.set(this.target.x, this.target.y, 0)
@@ -257,8 +257,8 @@ export class ParticleScene {
     p.cx += (p.x - p.cx) * 0.05
     p.cy += (p.y - p.cy) * 0.05
     this.spin += (this.spinTarget - this.spin) * 0.06
-    this.points.rotation.y = this.spin + time * 0.06 + p.cx * 0.35
-    this.points.rotation.x = Math.sin(time * 0.2) * 0.08 + p.cy * 0.22
+    this.points.rotation.y = this.spin + Math.sin(time * 0.25) * 0.18 + p.cx * 0.35
+    this.points.rotation.x = 0.16 + Math.sin(time * 0.2) * 0.06 + p.cy * 0.22
     const g = this.group
     g.position.x += (this.target.x - g.position.x) * 0.06
     g.position.y += (this.target.y - g.position.y) * 0.06

@@ -7,13 +7,14 @@
 
 .about__bio p {
   color: var(--text-dim);
-  font-size: 1.02rem;
+  font-size: 1.05rem;
   margin-bottom: 18px;
   max-width: 62ch;
 }
 
 .about__lead {
-  font-size: 1.18rem;
+  font-size: clamp(1.25rem, 2vw, 1.7rem);
+  line-height: 1.45;
   color: var(--text);
 }
 

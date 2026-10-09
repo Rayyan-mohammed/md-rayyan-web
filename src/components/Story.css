@@ -168,3 +168,35 @@
     right: -11px;
   }
 }
+
+/* oversized outlined chapter numeral */
+.story__ghost {
+  position: absolute;
+  right: clamp(30px, 6vw, 110px);
+  bottom: 30px;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(9rem, 26vw, 26rem);
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(212, 175, 55, 0.22);
+  pointer-events: none;
+  animation: ghost-in 1.2s var(--ease) both;
+}
+
+@keyframes ghost-in {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+}
+
+@media (max-width: 760px) {
+  .story__ghost {
+    top: 120px;
+    bottom: auto;
+    right: 16px;
+    font-size: 8rem;
+  }
+}
