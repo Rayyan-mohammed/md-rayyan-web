@@ -1,62 +1,55 @@
-import { motion } from 'framer-motion'
-import TagPill from './TagPill'
 import Bold from './Bold'
 import { IconGithub, IconExternal } from './Icons'
 import './ProjectCard.css'
 
-export default function ProjectCard({ project, index }) {
+// Light card that inverts to dark on hover (pure CSS, see ProjectCard.css).
+export default function ProjectCard({ project }) {
   return (
-    <motion.article
-      className="project-card"
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.6, delay: (index % 3) * 0.08, ease: [0.19, 1, 0.22, 1] }}
-    >
-      <div className={`project-card__cover project-card__cover--${(index % 5) + 1}`}>
-        <span className="project-card__number">{project.number}</span>
+    <article className="pcard" data-cursor-hover>
+      <span className="pcard__bignum" aria-hidden="true">
+        {project.number}
+      </span>
+
+      <div className="pcard__head mono">
+        <span>{project.number}</span>
+        <span>{project.year}</span>
       </div>
 
-      <div className="project-card__body">
-        <div className="project-card__top">
-          <div>
-            <h3 className="project-card__title">{project.title}</h3>
-            <p className="project-card__subtitle">{project.subtitle}</p>
-          </div>
-          <span className="project-card__year mono">{project.year}</span>
-        </div>
+      <h3 className="pcard__title">{project.title}</h3>
+      <p className="pcard__sub">{project.subtitle}</p>
 
-        <p className="project-card__desc">
-          <Bold text={project.description} />
-        </p>
+      <p className="pcard__desc">
+        <Bold text={project.description} />
+      </p>
 
-        <ul className="project-card__highlights">
-          {project.highlights.map((h, i) => (
-            <li key={i}>
-              <Bold text={h} />
-            </li>
-          ))}
-        </ul>
+      <ul className="pcard__highlights">
+        {project.highlights.map((h, i) => (
+          <li key={i}>
+            <Bold text={h} />
+          </li>
+        ))}
+      </ul>
 
-        <div className="project-card__tags">
-          {project.tags.map((tag) => (
-            <TagPill key={tag}>{tag}</TagPill>
-          ))}
-        </div>
-
-        <div className="project-card__links">
-          {project.github && (
-            <a href={project.github} target="_blank" rel="noopener noreferrer" className="project-card__link">
-              <IconGithub /> GitHub
-            </a>
-          )}
-          {project.demo && (
-            <a href={project.demo} target="_blank" rel="noopener noreferrer" className="project-card__link">
-              <IconExternal /> Live Demo
-            </a>
-          )}
-        </div>
+      <div className="pcard__tags">
+        {project.tags.map((tag) => (
+          <span className="chip" key={tag}>
+            {tag}
+          </span>
+        ))}
       </div>
-    </motion.article>
+
+      <div className="pcard__links">
+        {project.github && (
+          <a href={project.github} target="_blank" rel="noopener noreferrer" className="pcard__link">
+            <IconGithub /> GitHub
+          </a>
+        )}
+        {project.demo && (
+          <a href={project.demo} target="_blank" rel="noopener noreferrer" className="pcard__link">
+            <IconExternal /> Live demo
+          </a>
+        )}
+      </div>
+    </article>
   )
 }

@@ -1,155 +1,160 @@
-.project-card {
+.pcard {
+  --pc-bg: #f8f4ea;
+  --pc-text: #16130c;
+  --pc-dim: #4b4434;
+  --pc-line: rgba(60, 44, 8, 0.18);
+  --pc-accent: #8a680b;
   position: relative;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  background: var(--card);
-  overflow: hidden;
-  transition: border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
-}
-
-.project-card:hover {
-  border-color: var(--border-strong);
-  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(212, 175, 55, 0.25);
-}
-
-.project-card__cover {
-  position: relative;
-  height: 180px;
-  overflow: hidden;
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  padding: 18px 22px;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  padding: clamp(22px, 2.2vw, 32px);
+  border-radius: 26px;
+  border: 1px solid var(--pc-line);
+  background: var(--pc-bg);
+  color: var(--pc-text);
+  transition: background 0.55s var(--ease), color 0.55s var(--ease), border-color 0.55s var(--ease),
+    transform 0.55s var(--ease), box-shadow 0.55s var(--ease);
 }
 
-.project-card__cover::after {
-  content: '';
+/* invert to dark on hover */
+.pcard:hover {
+  --pc-bg: #0b0a07;
+  --pc-text: #f4f0e6;
+  --pc-dim: #b6ae9c;
+  --pc-line: rgba(212, 175, 55, 0.3);
+  --pc-accent: #e3c25a;
+  transform: translateY(-8px);
+  box-shadow: 0 34px 60px -30px rgba(20, 14, 2, 0.55);
+}
+
+.pcard__bignum {
   position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 14px 14px;
-  opacity: 0.5;
-}
-
-.project-card__cover > * {
-  position: relative;
-  z-index: 1;
-  transition: transform 0.6s var(--ease);
-}
-
-.project-card:hover .project-card__cover > * {
-  transform: scale(1.08);
-}
-
-.project-card__cover--1 { background: linear-gradient(135deg, #1a1207 0%, #3a2a08 55%, #0c0a05 100%); }
-.project-card__cover--2 { background: linear-gradient(150deg, #0e0d0a 0%, #241b06 60%, #050504 100%); }
-.project-card__cover--3 { background: linear-gradient(120deg, #120f06 0%, #2e2309 50%, #080704 100%); }
-.project-card__cover--4 { background: linear-gradient(160deg, #16130a 0%, #332506 55%, #0a0906 100%); }
-.project-card__cover--5 { background: linear-gradient(140deg, #100d06 0%, #29200a 50%, #060503 100%); }
-
-.project-card__number {
+  right: -0.06em;
+  top: -0.2em;
   font-family: var(--font-head);
-  font-style: italic;
   font-weight: 700;
-  font-size: 3.4rem;
+  font-size: clamp(9rem, 15vw, 14rem);
   line-height: 1;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(212, 175, 55, 0.55);
+  letter-spacing: -0.05em;
+  color: var(--pc-text);
+  opacity: 0.05;
+  pointer-events: none;
+  transition: opacity 0.55s var(--ease), color 0.55s var(--ease);
 }
 
-.project-card__body {
-  position: relative;
-  z-index: 1;
-  padding: 26px 28px 30px;
+.pcard:hover .pcard__bignum {
+  opacity: 0.09;
 }
 
-.project-card__top {
+.pcard__head {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 16px;
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  color: var(--pc-accent);
+  transition: color 0.55s var(--ease);
 }
 
-.project-card__title {
+.pcard__title {
   font-family: var(--font-head);
-  font-size: 1.4rem;
   font-weight: 600;
-}
-
-.project-card__subtitle {
+  font-size: clamp(1.7rem, 2.5vw, 2.3rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
   margin-top: 4px;
-  font-size: 0.86rem;
-  color: var(--muted);
 }
 
-.project-card__year {
-  font-size: 0.75rem;
-  color: var(--cyan);
-  white-space: nowrap;
+.pcard__sub {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--pc-dim);
+  transition: color 0.55s var(--ease);
 }
 
-.project-card__desc {
-  color: var(--text-dim);
-  font-size: 0.96rem;
-  margin-bottom: 12px;
+.pcard__desc {
+  margin-top: 6px;
+  font-size: 0.92rem;
+  color: var(--pc-dim);
+  transition: color 0.55s var(--ease);
 }
 
-.project-card__desc strong,
-.project-card__highlights strong {
-  color: var(--green);
+.pcard__desc strong,
+.pcard__highlights strong {
+  color: var(--pc-text);
   font-weight: 600;
 }
 
-.project-card__highlights {
+.pcard__highlights {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--pc-line);
+  transition: border-color 0.55s var(--ease);
 }
 
-.project-card__highlights li {
+.pcard__highlights li {
   position: relative;
   padding-left: 16px;
-  font-size: 0.88rem;
-  color: var(--text-dim);
+  font-size: 0.84rem;
+  color: var(--pc-dim);
+  transition: color 0.55s var(--ease);
 }
 
-.project-card__highlights li::before {
+.pcard__highlights li::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 0.6em;
-  width: 5px;
+  top: 0.62em;
+  width: 7px;
   height: 1px;
-  background: var(--muted);
+  background: var(--pc-accent);
 }
 
-.project-card__tags {
+.pcard__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-top: auto;
+  padding-top: 8px;
 }
 
-.project-card__links {
+.pcard .chip {
+  background: transparent;
+  color: var(--pc-dim);
+  border-color: var(--pc-line);
+  transition: color 0.55s var(--ease), border-color 0.55s var(--ease);
+}
+
+.pcard__links {
   display: flex;
-  gap: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.project-card__link {
+.pcard__link {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--pc-line);
   font-family: var(--font-mono);
-  font-size: 0.82rem;
-  color: var(--text-dim);
-  transition: color 0.2s;
+  font-size: 0.78rem;
+  color: var(--pc-text);
+  transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease);
 }
 
-.project-card__link:hover {
-  color: var(--green);
+.pcard__link svg {
+  width: 15px;
+  height: 15px;
+}
+
+.pcard__link:hover {
+  background: var(--pc-text);
+  color: var(--pc-bg);
+  border-color: var(--pc-text);
 }

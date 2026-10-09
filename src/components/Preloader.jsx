@@ -48,7 +48,7 @@ export default function Preloader({ onDone }) {
           })
           .to('.loader__content', { yPercent: -30, opacity: 0, duration: 0.6, ease: 'power3.in' })
           .add(startIntro, '>-0.1')
-          .to(rootRef.current, { yPercent: -100, duration: 1.15, ease: 'expo.inOut' }, '<')
+          .to(rootRef.current, { y: () => -window.innerHeight * 1.2, duration: 1.15, ease: 'expo.inOut' }, '<')
       }
     }
     gsap.ticker.add(tick)
