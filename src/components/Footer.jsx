@@ -1,4 +1,4 @@
-import { profile } from '../data/content'
+import { profile, labels } from '../data/content'
 import './Footer.css'
 
 export default function Footer() {
@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="footer theme-light" data-bg="light">
       <div className="container footer__inner mono">
         <span>
-          © {new Date().getFullYear()} {profile.name}. Crafted with intention.
+          © {new Date().getFullYear()} {profile.name}. {labels.credits}
         </span>
         <a href="#hero">Back to top ↑</a>
       </div>

@@ -6,7 +6,6 @@
 }
 
 .statement__text {
-  max-width: 22ch;
   font-family: var(--font-head);
   font-weight: 500;
   font-size: clamp(2rem, 5.6vw, 5.2rem);

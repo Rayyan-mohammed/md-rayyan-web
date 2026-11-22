@@ -172,3 +172,4 @@ export function heart(n) {
 
 export const SHAPES = [knot, brackets, cube, nodeGraph, rings, heart]
 export const SHAPE_NAMES = ['knot', 'brackets', 'cube', 'graph', 'rings', 'heart']
+export const SHAPE_INDEX = Object.fromEntries(SHAPE_NAMES.map((name, i) => [name, i]))

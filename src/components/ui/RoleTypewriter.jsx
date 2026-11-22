@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useReducedMotion } from '../../lib/useReducedMotion'
 import './RoleTypewriter.css'
 
 const TYPE_SPEED = 55
@@ -7,11 +8,19 @@ const HOLD_MS = 1500
 const BLANK_MS = 400
 
 export default function RoleTypewriter({ roles }) {
+  const reduced = useReducedMotion()
   const [roleIndex, setRoleIndex] = useState(0)
-  const [text, setText] = useState('')
+  const [text, setText] = useState(() => (reduced ? roles[0] : ''))
   const [phase, setPhase] = useState('typing')
 
   useEffect(() => {
+    if (reduced) {
+      setRoleIndex(0)
+      setText(roles[0])
+      setPhase('typing')
+      return
+    }
+
     const current = roles[roleIndex]
     let timer
 
@@ -33,7 +42,7 @@ export default function RoleTypewriter({ roles }) {
     }
 
     return () => clearTimeout(timer)
-  }, [text, phase, roleIndex, roles])
+  }, [text, phase, roleIndex, roles, reduced])
 
   return (
     <p className="role-typewriter mono">

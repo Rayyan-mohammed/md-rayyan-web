@@ -4,8 +4,6 @@ import { gsap, ScrollTrigger, prefersReducedMotion } from './gsap'
 let lenis = null
 let tick = null
 
-export const getLenis = () => lenis
-
 export function initSmooth() {
   if (lenis || prefersReducedMotion()) return
   lenis = new Lenis({

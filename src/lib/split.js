@@ -1,4 +1,4 @@
-import { gsap, ScrollTrigger, SplitText } from './gsap'
+import { gsap, ScrollTrigger, SplitText, prefersReducedMotion } from './gsap'
 import { fontsReady } from './boot'
 
 // Split `el` into masked lines once fonts are in; re-splits on resize. Returns a cleanup fn.
@@ -25,6 +25,10 @@ export function maskLines(el, onSplit) {
 
 // Lines slide up out of their masks the first time the element scrolls into view.
 export function splitReveal(el, { start = 'top 88%', stagger = 0.1, duration = 1.25 } = {}) {
+  if (prefersReducedMotion()) {
+    gsap.set(el, { visibility: 'visible' })
+    return () => {}
+  }
   let played = false
   let st = null
   const off = maskLines(el, (lines) => {

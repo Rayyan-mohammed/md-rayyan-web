@@ -94,12 +94,14 @@
   padding: 6px 0;
   transform: translateY(-50%);
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.5s var(--ease);
+  transition: opacity 0.5s var(--ease), visibility 0.5s var(--ease);
 }
 
 .story--live .rail {
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
 }
 
@@ -199,4 +201,41 @@
     right: 16px;
     font-size: 8rem;
   }
+}
+
+/* reduced-motion fallback: the chapters become a plain, unpinned list */
+.story--static {
+  padding-block: clamp(100px, 16vh, 180px);
+}
+
+.story__label--static {
+  position: static;
+  display: block;
+  margin-bottom: clamp(32px, 5vh, 56px);
+}
+
+.story__stack--static {
+  width: min(760px, 100%);
+  height: auto;
+}
+
+.chapter--static {
+  position: static;
+  inset: auto;
+  display: block;
+  padding-block: clamp(28px, 4vh, 44px);
+  border-top: 1px solid var(--border);
+}
+
+.chapter--static:last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+.chapter--static .chapter__title {
+  visibility: visible;
+  margin-top: 12px;
+}
+
+.chapter--static .chapter__body {
+  margin-top: 16px;
 }

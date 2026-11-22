@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 import Magnetic from './ui/Magnetic'
 import { IconGithub, IconLinkedin, IconMail, IconBadge } from './ui/Icons'
-import { profile } from '../data/content'
+import { labels, profile, sectionNumbers } from '../data/content'
 import './Contact.css'
 
 const socials = [
@@ -29,24 +28,29 @@ function useLocalTime() {
 }
 
 export default function Contact() {
-  const [copied, setCopied] = useState(false)
+  const [copyStatus, setCopyStatus] = useState('idle')
+  const timer = useRef(null)
   const time = useLocalTime()
 
+  useEffect(() => () => clearTimeout(timer.current), [])
+
   const handleCopy = async () => {
+    let status = 'copied'
     try {
       await navigator.clipboard.writeText(profile.email)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1800)
     } catch {
-      // clipboard unavailable, nothing to do
+      status = 'failed'
     }
+    setCopyStatus(status)
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => setCopyStatus('idle'), 2200)
   }
 
   return (
     <section id="contact" className="contact theme-light" data-bg="light">
       <div className="container">
         <span className="eyebrow mono" data-reveal>
-          06 Contact
+          {sectionNumbers.contact} {labels.contact}
         </span>
         <h2 className="contact__title" data-split>
           Let&apos;s build something worth shipping.
@@ -67,42 +71,38 @@ export default function Contact() {
         <div className="contact__row">
           <div className="contact__note" data-reveal>
             <p className="contact__status mono">
-              <span className="contact__dot" /> Open to internships, collaborations and research
+              <span className="contact__dot" /> {labels.contactStatus}
             </p>
             <p className="contact__time mono">
-              Hyderabad, IN · <time>{time}</time> IST
+              {profile.location} · <time>{time}</time> IST
             </p>
           </div>
 
           <div className="contact__socials" data-reveal>
-            {socials.map(({ label, href, Icon }) => (
-              <Magnetic
-                key={label}
-                as="a"
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="contact__social mono"
-              >
-                <Icon /> {label}
+            {socials.map(({ label, href, Icon }) => {
+              const external = href.startsWith('http')
+              return (
+                <Magnetic
+                  key={label}
+                  as="a"
+                  href={href}
+                  {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  className="contact__social mono"
+                >
+                  <Icon /> {label}
+                </Magnetic>
+              )
+            })}
+            <span className="contact__copy-wrap">
+              <Magnetic as="button" className="contact__social contact__copy mono" onClick={handleCopy}>
+                Copy email
               </Magnetic>
-            ))}
-            <Magnetic as="button" className="contact__social contact__copy mono" onClick={handleCopy}>
-              Copy email
-              <AnimatePresence>
-                {copied && (
-                  <motion.span
-                    className="contact__toast mono"
-                    initial={{ opacity: 0, y: 6, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -6, scale: 0.9 }}
-                    transition={{ duration: 0.25 }}
-                  >
-                    Copied ✓
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </Magnetic>
+              {copyStatus !== 'idle' && (
+                <span className="contact__toast mono" role="status" aria-atomic="true">
+                  {copyStatus === 'copied' ? 'Copied ✓' : 'Copy failed'}
+                </span>
+              )}
+            </span>
           </div>
         </div>
       </div>

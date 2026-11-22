@@ -105,3 +105,39 @@
     display: none;
   }
 }
+
+@media (min-width: 981px) and (prefers-reduced-motion: reduce) {
+  .projects {
+    padding-block: clamp(80px, 12vh, 130px);
+  }
+
+  .projects__pin {
+    height: auto;
+    display: block;
+    padding-top: 0;
+    overflow: visible;
+  }
+
+  .projects__head {
+    margin-bottom: clamp(24px, 4vh, 44px);
+  }
+
+  .projects__track {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: var(--maxw);
+    margin-inline: auto;
+    gap: 22px;
+    padding-inline: clamp(20px, 5vw, 40px);
+    will-change: auto;
+  }
+
+  .projects__track .pcard {
+    flex: 0 0 auto;
+  }
+
+  .projects__progress {
+    display: none;
+  }
+}

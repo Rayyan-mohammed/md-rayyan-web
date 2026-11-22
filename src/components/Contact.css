@@ -157,15 +157,33 @@
   height: 16px;
 }
 
+/* toast lives outside the button's overflow:hidden fill layer */
+.contact__copy-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
 .contact__toast {
   position: absolute;
-  top: -34px;
+  top: -38px;
   left: 50%;
-  transform: translateX(-50%);
   padding: 4px 12px;
   border-radius: 999px;
   background: var(--text);
   color: var(--bg);
   font-size: 0.7rem;
   white-space: nowrap;
+  pointer-events: none;
+  animation: toast-in 0.25s var(--ease) both;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
 }

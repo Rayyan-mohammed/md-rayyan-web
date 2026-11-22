@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from 'react'
 import { gsap, ScrollTrigger } from '../lib/gsap'
 import SectionWrapper from './SectionWrapper'
-import { skillGroups } from '../data/content'
+import { skillGroups, labels, sectionNumbers } from '../data/content'
 import './Skills.css'
 
 // Each skill is a pill whose gold fill grows to its level when the card scrolls into view.
@@ -23,7 +23,7 @@ export default function Skills() {
   }, [])
 
   return (
-    <SectionWrapper id="skills" number="04" title="Skills" subtitle="Tools I reach for, and how deep I go with each.">
+    <SectionWrapper id="skills" number={sectionNumbers.skills} title="Skills" subtitle={labels.skillsSubtitle}>
       <div className="skills__grid" ref={gridRef}>
         {skillGroups.map((group, gi) => (
           <div key={group.category} className="skills__col" data-reveal>

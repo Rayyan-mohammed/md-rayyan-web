@@ -185,14 +185,6 @@ button {
   font-family: var(--font-mono);
 }
 
-.grad-text {
-  background: var(--accent-grad);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
 /* ============================================================
    Buttons
    ============================================================ */
@@ -303,8 +295,8 @@ main > .section {
   --border-strong: rgba(60, 44, 8, 0.4);
   --text: #16130c;
   --text-dim: #4b4434;
-  --muted: #7a705c;
-  --green: #8a680b;
+  --muted: #6b6250;
+  --green: #80600a;
   --cyan: #6f560f;
   background: var(--bg);
   color: var(--text);
@@ -347,6 +339,46 @@ main > .section {
 
 main:focus-visible {
   outline: none;
+}
+
+/* ============================================================
+   Error boundary fallback
+   ============================================================ */
+.error-screen {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
+  padding: clamp(28px, 8vw, 96px);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.error-screen__eyebrow {
+  font-size: 0.76rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+
+.error-screen__title {
+  font-family: var(--font-head);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.error-screen__body {
+  max-width: 52ch;
+  color: var(--text-dim);
+}
+
+.error-screen__body a {
+  color: var(--green);
+  text-decoration: underline;
 }
 
 /* ============================================================

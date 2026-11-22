@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { motion, useMotionValue, useSpring } from 'framer-motion'
 import './CustomCursor.css'
 
 const INTERACTIVE_SELECTOR = 'a, button, .magnetic, [data-cursor-hover]'
 const IDLE_SIZE = 26
 const PAD = 10
+const POINTER_QUERY = '(hover: hover) and (pointer: fine) and (min-width: 861px)'
 
 function labelFor(el) {
   const text = el.innerText?.trim().replace(/\s+/g, ' ')
@@ -16,29 +16,31 @@ function labelFor(el) {
 
 export default function CustomCursor() {
   const [enabled, setEnabled] = useState(false)
-  const [box, setBox] = useState({ w: IDLE_SIZE, h: IDLE_SIZE, active: false })
+  const [active, setActive] = useState(false)
   const [label, setLabel] = useState('')
   const [confidence, setConfidence] = useState(0)
   const [pressed, setPressed] = useState(false)
 
-  // precise dot: follows the raw pointer, no smoothing
-  const dotX = useMotionValue(-100)
-  const dotY = useMotionValue(-100)
-
-  // reticle box: springs toward either the pointer (idle) or a locked element (hover)
-  const boxX = useMotionValue(-100)
-  const boxY = useMotionValue(-100)
-  const springConf = { damping: 24, stiffness: 320, mass: 0.5 }
-  const rx = useSpring(boxX, springConf)
-  const ry = useSpring(boxY, springConf)
-  const rw = useSpring(useMotionValue(IDLE_SIZE), { damping: 26, stiffness: 260 })
-  const rh = useSpring(useMotionValue(IDLE_SIZE), { damping: 26, stiffness: 260 })
-
-  const lockedRef = useRef(false)
-  const rafRef = useRef(null)
+  const dotRef = useRef(null)
+  const reticleRef = useRef(null)
+  const state = useRef({
+    px: -100,
+    py: -100,
+    bx: -100,
+    by: -100,
+    tx: -100,
+    ty: -100,
+    w: IDLE_SIZE,
+    h: IDLE_SIZE,
+    tw: IDLE_SIZE,
+    th: IDLE_SIZE,
+    locked: false,
+    active: false,
+    pressed: false,
+  })
 
   useEffect(() => {
-    const mq = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const mq = window.matchMedia(POINTER_QUERY)
     const apply = () => setEnabled(mq.matches)
     apply()
     mq.addEventListener('change', apply)
@@ -46,34 +48,62 @@ export default function CustomCursor() {
   }, [])
 
   useEffect(() => {
-    rw.set(box.w)
-    rh.set(box.h)
-  }, [box.w, box.h, rw, rh])
-
-  useEffect(() => {
     if (!enabled) return
+
+    const s = state.current
     document.body.classList.add('has-custom-cursor')
+    s.locked = false
+    s.active = false
+    s.pressed = false
+    s.w = IDLE_SIZE
+    s.h = IDLE_SIZE
+    s.tw = IDLE_SIZE
+    s.th = IDLE_SIZE
+    setActive(false)
+    setPressed(false)
+    setLabel('')
+    let raf = 0
+
+    const tick = () => {
+      // reticle box eases toward the pointer or the hovered element
+      s.bx += (s.tx - s.bx) * 0.22
+      s.by += (s.ty - s.by) * 0.22
+      s.w += (s.tw - s.w) * 0.24
+      s.h += (s.th - s.h) * 0.24
+
+      if (reticleRef.current) {
+        reticleRef.current.style.transform = `translate3d(${s.bx - s.w / 2}px, ${s.by - s.h / 2}px, 0)`
+        reticleRef.current.style.width = `${s.w}px`
+        reticleRef.current.style.height = `${s.h}px`
+      }
+      if (dotRef.current) {
+        const scale = s.pressed ? 0.5 : s.active ? 0 : 1
+        dotRef.current.style.transform = `translate3d(${s.px}px, ${s.py}px, 0) scale(${scale})`
+      }
+      raf = requestAnimationFrame(tick)
+    }
 
     const onMove = (e) => {
-      dotX.set(e.clientX)
-      dotY.set(e.clientY)
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
-      rafRef.current = requestAnimationFrame(() => {
-        if (!lockedRef.current) {
-          boxX.set(e.clientX)
-          boxY.set(e.clientY)
-        }
-      })
+      s.px = e.clientX
+      s.py = e.clientY
+      if (!s.locked) {
+        s.tx = e.clientX
+        s.ty = e.clientY
+      }
     }
 
     const onOver = (e) => {
       const el = e.target.closest?.(INTERACTIVE_SELECTOR)
       if (!el) return
+      if (e.relatedTarget && el.contains(e.relatedTarget)) return
       const rect = el.getBoundingClientRect()
-      lockedRef.current = true
-      boxX.set(rect.left + rect.width / 2)
-      boxY.set(rect.top + rect.height / 2)
-      setBox({ w: rect.width + PAD * 2, h: rect.height + PAD * 2, active: true })
+      s.locked = true
+      s.active = true
+      s.tx = rect.left + rect.width / 2
+      s.ty = rect.top + rect.height / 2
+      s.tw = rect.width + PAD * 2
+      s.th = rect.height + PAD * 2
+      setActive(true)
       setLabel(labelFor(el))
       setConfidence(93 + Math.random() * 6.8)
     }
@@ -81,21 +111,32 @@ export default function CustomCursor() {
     const onOut = (e) => {
       const el = e.target.closest?.(INTERACTIVE_SELECTOR)
       if (!el) return
-      lockedRef.current = false
-      boxX.set(dotX.get())
-      boxY.set(dotY.get())
-      setBox({ w: IDLE_SIZE, h: IDLE_SIZE, active: false })
+      if (e.relatedTarget && el.contains(e.relatedTarget)) return
+      s.locked = false
+      s.active = false
+      s.tx = s.px
+      s.ty = s.py
+      s.tw = IDLE_SIZE
+      s.th = IDLE_SIZE
+      setActive(false)
       setLabel('')
     }
 
-    const onDown = () => setPressed(true)
-    const onUp = () => setPressed(false)
+    const onDown = () => {
+      s.pressed = true
+      setPressed(true)
+    }
+    const onUp = () => {
+      s.pressed = false
+      setPressed(false)
+    }
 
-    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mousemove', onMove, { passive: true })
     document.addEventListener('mouseover', onOver)
     document.addEventListener('mouseout', onOut)
     window.addEventListener('mousedown', onDown)
     window.addEventListener('mouseup', onUp)
+    raf = requestAnimationFrame(tick)
 
     return () => {
       document.body.classList.remove('has-custom-cursor')
@@ -104,43 +145,33 @@ export default function CustomCursor() {
       document.removeEventListener('mouseout', onOut)
       window.removeEventListener('mousedown', onDown)
       window.removeEventListener('mouseup', onUp)
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      cancelAnimationFrame(raf)
     }
-  }, [enabled, dotX, dotY, boxX, boxY])
+  }, [enabled])
 
   if (!enabled) return null
 
   return (
     <>
-      <motion.div
-        className="cv-cursor-dot"
-        style={{ translateX: dotX, translateY: dotY }}
-        animate={{ scale: pressed ? 0.5 : box.active ? 0 : 1 }}
-        transition={{ duration: 0.18 }}
-      />
+      <div ref={dotRef} className="cv-cursor-dot" aria-hidden="true" />
 
-      <motion.div
-        className={`cv-reticle ${box.active ? 'cv-reticle--active' : ''} ${pressed ? 'cv-reticle--pressed' : ''}`}
-        style={{ translateX: rx, translateY: ry, width: rw, height: rh, x: '-50%', y: '-50%' }}
+      <div
+        ref={reticleRef}
+        className={`cv-reticle ${active ? 'cv-reticle--active' : ''} ${pressed ? 'cv-reticle--pressed' : ''}`}
+        aria-hidden="true"
       >
         <span className="cv-reticle__corner cv-reticle__corner--tl" />
         <span className="cv-reticle__corner cv-reticle__corner--tr" />
         <span className="cv-reticle__corner cv-reticle__corner--bl" />
         <span className="cv-reticle__corner cv-reticle__corner--br" />
 
-        {box.active && (
-          <motion.div
-            className="cv-reticle__tag mono"
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-          >
+        {active && (
+          <div className="cv-reticle__tag mono">
             <span className="cv-reticle__tag-label">{label}</span>
             <span className="cv-reticle__tag-conf">{confidence.toFixed(1)}%</span>
-          </motion.div>
+          </div>
         )}
-      </motion.div>
+      </div>
     </>
   )
 }

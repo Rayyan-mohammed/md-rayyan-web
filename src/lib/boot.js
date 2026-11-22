@@ -57,7 +57,8 @@ export let fontsReady = Promise.resolve()
 if (typeof document !== 'undefined' && document.fonts) {
   fontsReady = Promise.all([
     document.fonts.load('600 1em "Playfair Display"'),
-    document.fonts.load('italic 500 1em "Playfair Display"'),
+    document.fonts.load('700 1em "Playfair Display"'),
+    document.fonts.load('italic 700 1em "Playfair Display"'),
     document.fonts.load('400 1em Inter'),
     document.fonts.load('500 1em "JetBrains Mono"'),
   ])

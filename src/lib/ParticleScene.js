@@ -176,6 +176,7 @@ export class ParticleScene {
       this.group.position.set(this.target.x, this.target.y, 0)
       this.group.scale.setScalar(this.target.s)
     }
+    if (this.reduced) this.renderOnce()
   }
 
   setPointer(x, y) {
@@ -190,8 +191,9 @@ export class ParticleScene {
   setActive(on) {
     if (on === this.running) return
     this.running = on
-    if (on) gsap.ticker.add(this.render)
+    if (on && !this.reduced) gsap.ticker.add(this.render)
     else gsap.ticker.remove(this.render)
+    if (this.reduced) this.renderOnce()
   }
 
   // Where each particle is right now, so an interrupted morph continues from there.

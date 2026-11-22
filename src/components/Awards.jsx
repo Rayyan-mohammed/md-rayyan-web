@@ -1,10 +1,10 @@
 import SectionWrapper from './SectionWrapper'
-import { awards, certifications, education, profile } from '../data/content'
+import { awards, certifications, education, profile, labels, sectionNumbers } from '../data/content'
 import './Awards.css'
 
 export default function Awards() {
   return (
-    <SectionWrapper id="awards" number="05" title="Awards &amp; Education">
+    <SectionWrapper id="awards" number={sectionNumbers.awards} title={labels.awardsTitle}>
       <div className="award-grid">
         {awards.map((award) => (
           <article className="award-card" key={award.title} data-reveal data-cursor-hover>

@@ -9,8 +9,31 @@ export const profile = {
   github: 'https://github.com/Rayyan-mohammed',
   linkedin: 'https://www.linkedin.com/in/md-rayyan/',
   credly: 'https://www.credly.com/users/rayyan-md/',
+  location: 'Hyderabad, IN',
+  availability: 'Available for work',
   tagline:
     'Building end-to-end ML systems — from computer vision diagnostics to production-grade LLM agents.',
+}
+
+export const labels = {
+  story: 'How I work',
+  statement: 'The short version',
+  projects: 'Selected work',
+  contact: 'Contact',
+  contactStatus: 'Open to internships, collaborations and research',
+  experienceSubtitle: "Leadership roles where I've translated technical skill into community impact.",
+  skillsSubtitle: 'Tools I reach for, and how deep I go with each.',
+  awardsTitle: 'Awards & Education',
+  credits: 'Crafted with intention.',
+}
+
+export const sectionNumbers = {
+  about: '01',
+  experience: '02',
+  projects: '03',
+  skills: '04',
+  awards: '05',
+  contact: '06',
 }
 
 export const heroRoles = [
@@ -81,6 +104,17 @@ export const aboutTags = [
   'Cloud (AWS / GCP)',
   'Full-Stack',
 ]
+
+export const aboutCopy = {
+  lead:
+    "I'm a final-year B.Tech CSE (Data Science) student at STME, NMIMS University, Hyderabad, building end-to-end machine learning systems —",
+  leadEmphasis:
+    'from computer vision models that classify skin lesions with fairness-aware evaluation, to LLM agents that reason over structured public-health data with zero hallucination.',
+  paragraphs: [
+    'My current focus spans two directions: production-grade ML pipelines (transfer learning, uncertainty estimation, explainability) and applied GenAI (LangChain ReAct agents, RAG, multi-LLM orchestration) — always shipped as real, deployed products rather than notebooks.',
+    'Outside of building, I lead as **Head of the Code IT Club** and served as a **Google Cloud Student Ambassador** across 7 campuses, running events and workshops that have reached 1,000+ students.',
+  ],
+}
 
 export const experience = [
   {
@@ -176,7 +210,7 @@ export const projects = [
     ],
     tags: ['PHP', 'MySQL', 'JavaScript', 'AWS'],
     github: 'https://github.com/Rayyan-mohammed/Pharma-Flow-Pro',
-    demo: 'http://pharmaflowpro-env.eba-qmekzfkj.us-east-1.elasticbeanstalk.com/',
+    demo: 'https://pharmaflowpro-env.eba-qmekzfkj.us-east-1.elasticbeanstalk.com/',
     year: '2025 — 2026',
   },
   {
@@ -270,14 +304,14 @@ export const skillGroups = [
 
 export const awards = [
   {
-    year: '2025',
-    title: 'Winner — NMIMS Hackathon',
-    detail: 'Led development of a scalable digital growth platform for small businesses among 30 competing teams.',
-  },
-  {
     year: '2026',
     title: 'Plantora — Top 20%',
     detail: 'AI-based smart agriculture system, ranked among the top 20% at the NMIMS Research Symposium.',
+  },
+  {
+    year: '2025',
+    title: 'Winner — NMIMS Hackathon',
+    detail: 'Led development of a scalable digital growth platform for small businesses among 30 competing teams.',
   },
   {
     year: '2024',

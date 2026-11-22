@@ -78,6 +78,14 @@
   border-radius: 5px;
   font-size: 0.66rem;
   letter-spacing: 0.06em;
+  animation: cv-tag-in 0.18s var(--ease) both;
+}
+
+@keyframes cv-tag-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
 }
 
 .cv-reticle__tag-label {

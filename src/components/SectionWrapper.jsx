@@ -1,8 +1,8 @@
-export default function SectionWrapper({ id, number, title, subtitle, children, className = '', bg = 'dark', split = false }) {
+export default function SectionWrapper({ id, number, title, subtitle, children, className = '', bg = 'dark' }) {
   return (
     <section
       id={id}
-      className={`section ${split ? 'section--split' : ''} ${bg === 'light' ? 'theme-light' : ''} ${className}`}
+      className={`section ${bg === 'light' ? 'theme-light' : ''} ${className}`}
       data-bg={bg}
     >
       <div className="container">

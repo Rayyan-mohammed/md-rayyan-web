@@ -1,42 +1,43 @@
-import { useRef } from 'react'
-import { motion, useMotionValue, useSpring } from 'framer-motion'
-import { isFinePointer } from '../../lib/gsap'
+import { createElement, useEffect, useRef } from 'react'
+import { gsap, isFinePointer, prefersReducedMotion } from '../../lib/gsap'
 
 // Wraps interactive children with a magnetic-pull hover effect.
 export default function Magnetic({ children, strength = 0.35, className = '', as = 'div', ...props }) {
   const ref = useRef(null)
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-  const springX = useSpring(x, { stiffness: 220, damping: 18, mass: 0.4 })
-  const springY = useSpring(y, { stiffness: 220, damping: 18, mass: 0.4 })
+  const motion = useRef({ x: null, y: null })
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    motion.current.x = gsap.quickTo(el, 'x', { duration: 0.55, ease: 'power3.out' })
+    motion.current.y = gsap.quickTo(el, 'y', { duration: 0.55, ease: 'power3.out' })
+    return () => gsap.killTweensOf(el)
+  }, [])
 
   const handleMove = (e) => {
     const el = ref.current
-    if (!el || !isFinePointer()) return
+    if (!el || !isFinePointer() || prefersReducedMotion()) return
     const rect = el.getBoundingClientRect()
     const relX = e.clientX - (rect.left + rect.width / 2)
     const relY = e.clientY - (rect.top + rect.height / 2)
-    x.set(relX * strength)
-    y.set(relY * strength)
+    motion.current.x?.(relX * strength)
+    motion.current.y?.(relY * strength)
   }
 
   const reset = () => {
-    x.set(0)
-    y.set(0)
+    motion.current.x?.(0)
+    motion.current.y?.(0)
   }
 
-  const Comp = motion[as] || motion.div
-
-  return (
-    <Comp
-      ref={ref}
-      className={`magnetic ${className}`}
-      style={{ translateX: springX, translateY: springY }}
-      onMouseMove={handleMove}
-      onMouseLeave={reset}
-      {...props}
-    >
-      {children}
-    </Comp>
+  return createElement(
+    as,
+    {
+      ...props,
+      ref,
+      className: `magnetic ${className}`,
+      onMouseMove: handleMove,
+      onMouseLeave: reset,
+    },
+    children
   )
 }

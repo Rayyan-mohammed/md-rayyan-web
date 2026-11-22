@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { gsap } from '../lib/gsap'
 import { fontsReady, onIntro } from '../lib/boot'
+import { useReducedMotion } from '../lib/useReducedMotion'
 import { profile, heroRoles, heroMetrics } from '../data/content'
 import RoleTypewriter from './ui/RoleTypewriter'
 import Magnetic from './ui/Magnetic'
@@ -9,11 +10,18 @@ import './Hero.css'
 const WORD = ['MD', 'RAYYAN']
 
 function MetricTicker() {
+  const reduced = useReducedMotion()
   const [i, setI] = useState(0)
+
   useEffect(() => {
+    if (reduced) {
+      setI(0)
+      return
+    }
     const id = setInterval(() => setI((v) => (v + 1) % heroMetrics.length), 2600)
     return () => clearInterval(id)
-  }, [])
+  }, [reduced])
+
   const m = heroMetrics[i]
   return (
     <div className="hero__metric" data-hero="fade">
@@ -28,10 +36,18 @@ function MetricTicker() {
 
 export default function Hero() {
   const rootRef = useRef(null)
+  const reduced = useReducedMotion()
 
-  // initial hidden state (before the loader lifts)
+  // initial hidden state (before the loader lifts) or a static hero when motion is reduced
   useLayoutEffect(() => {
     const root = rootRef.current
+    if (reduced) {
+      gsap.set(root.querySelectorAll('.mask__in'), { yPercent: 0 })
+      gsap.set(root.querySelectorAll('[data-hero="fade"]'), { opacity: 1, y: 0 })
+      gsap.set('.nav', { yPercent: 0, opacity: 1 })
+      return
+    }
+
     gsap.set(root.querySelectorAll('.mask__in'), { yPercent: 115 })
     gsap.set(root.querySelectorAll('[data-hero="fade"]'), { opacity: 0, y: 24 })
     gsap.set('.nav', { yPercent: -120, opacity: 0 })
@@ -49,56 +65,60 @@ export default function Hero() {
       off()
       tl?.kill()
     }
-  }, [])
+  }, [reduced])
 
   // scroll-linked: frame opens to full-bleed, hero copy drifts and fades
   useLayoutEffect(() => {
     const root = rootRef.current
     const stageEl = document.querySelector('.stage')
+
+    if (reduced) {
+      ;['--it', '--ix', '--ib', '--r'].forEach((prop) => stageEl?.style.removeProperty(prop))
+      gsap.set(root.querySelector('.hero__inner'), { clearProps: 'opacity,transform' })
+      return
+    }
+
     const mm = gsap.matchMedia()
 
-    mm.add(
-      { desk: '(min-width: 761px)', mob: '(max-width: 760px)' },
-      (ctx) => {
-        const { desk } = ctx.conditions
-        const from = desk
-          ? { '--it': '84px', '--ix': '20px', '--ib': '20px', '--r': '30px' }
-          : { '--it': '70px', '--ix': '10px', '--ib': '10px', '--r': '22px' }
-        gsap.fromTo(
-          stageEl,
-          from,
-          {
-            '--it': '0px',
-            '--ix': '0px',
-            '--ib': '0px',
-            '--r': '0px',
-            ease: 'none',
-            scrollTrigger: {
-              trigger: root,
-              start: 'top top',
-              end: () => `+=${window.innerHeight * 0.9}`,
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          }
-        )
-        gsap.to(root.querySelector('.hero__inner'), {
-          yPercent: -14,
-          opacity: 0,
+    mm.add({ desk: '(min-width: 761px)', mob: '(max-width: 760px)' }, (ctx) => {
+      const { desk } = ctx.conditions
+      const from = desk
+        ? { '--it': '84px', '--ix': '20px', '--ib': '20px', '--r': '30px' }
+        : { '--it': '70px', '--ix': '10px', '--ib': '10px', '--r': '22px' }
+      gsap.fromTo(
+        stageEl,
+        from,
+        {
+          '--it': '0px',
+          '--ix': '0px',
+          '--ib': '0px',
+          '--r': '0px',
           ease: 'none',
-          scrollTrigger: { trigger: root, start: 'top top', end: '75% top', scrub: true },
-        })
-      }
-    )
+          scrollTrigger: {
+            trigger: root,
+            start: 'top top',
+            end: () => `+=${window.innerHeight * 0.9}`,
+            scrub: 0.6,
+            invalidateOnRefresh: true,
+          },
+        }
+      )
+      gsap.to(root.querySelector('.hero__inner'), {
+        yPercent: -14,
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: { trigger: root, start: 'top top', end: '75% top', scrub: true },
+      })
+    })
     return () => mm.revert()
-  }, [])
+  }, [reduced])
 
   return (
     <section id="hero" className="hero" ref={rootRef} data-bg="dark">
       <div className="container hero__inner">
         <div className="hero__top">
           <p className="hero__kicker mono" data-hero="fade">
-            <span className="hero__dot" /> Available for work — Hyderabad, IN
+            <span className="hero__dot" /> {profile.availability} — {profile.location}
           </p>
           <MetricTicker />
         </div>

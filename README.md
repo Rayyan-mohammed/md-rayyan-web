@@ -28,14 +28,14 @@ The header switches between light and dark depending on the section behind it.
 - **Smooth scroll** with Lenis, driven by `gsap.ticker` and synced via `lenis.on('scroll', ScrollTrigger.update)` ([src/lib/smooth.js](src/lib/smooth.js)). In-page links glide.
 - **Particle engine** in [src/lib/ParticleScene.js](src/lib/ParticleScene.js) with shape generators in [src/lib/shapes.js](src/lib/shapes.js). three.js is a lazy chunk, and the scene only renders while the hero and story are visible.
 - **Boot tracker** in [src/lib/boot.js](src/lib/boot.js) so the loader reflects real loading, and the intro plays when it finishes.
-- **Reduced motion** is respected: no smooth scroll, no loader, static particles.
-- **SEO basics**: canonical URL, Open Graph and Twitter meta tags, `robots.txt` and `sitemap.xml`.
+- **Reduced motion** is respected end to end: no smooth scroll, no loader, static particles, a static hero, unpinned story chapters and project cards, no count-ups or split-title reveals. The WebGL scene also stops its render loop.
+- **SEO basics**: canonical URL, Open Graph/Twitter tags with image alt text, Person JSON-LD, `robots.txt` and `sitemap.xml`.
+- **Error boundary** around the page so a runtime failure cannot leave the reveal states stuck at opacity 0.
 
 ## Stack
 
 - React 18 + Vite
 - GSAP (ScrollTrigger, SplitText), Lenis, three.js
-- Framer Motion for small component transitions
 - Plain CSS with custom properties for design tokens
 - Deployed on Vercel
 

@@ -19,10 +19,26 @@ export default function Preloader({ onDone }) {
   const barRef = useRef(null)
   const labelRef = useRef(null)
 
+  // Nothing behind the curtain should be tabbable or exposed while it loads.
+  useEffect(() => {
+    const nodes = [...document.querySelectorAll('.skip-link, .nav, main, footer')]
+    nodes.forEach((el) => {
+      el.inert = true
+      el.setAttribute('aria-hidden', 'true')
+    })
+    return () => {
+      nodes.forEach((el) => {
+        el.inert = false
+        el.removeAttribute('aria-hidden')
+      })
+    }
+  }, [])
+
   useEffect(() => {
     stopScroll()
     const start = performance.now()
     let shown = 0
+    let lastPct = -1
     let finished = false
     let lift = null
 
@@ -30,8 +46,13 @@ export default function Preloader({ onDone }) {
       const target = Math.min(bootProgress(), (performance.now() - start) / MIN_MS, 1) * 100
       shown += (target - shown) * 0.1
       if (target >= 100 && shown > 99.3) shown = 100
-      numRef.current.textContent = String(Math.round(shown)).padStart(3, '0')
+      const pct = Math.round(shown)
+      numRef.current.textContent = String(pct).padStart(3, '0')
       barRef.current.style.transform = `scaleX(${shown / 100})`
+      if (pct !== lastPct) {
+        lastPct = pct
+        rootRef.current?.setAttribute('aria-valuenow', String(pct))
+      }
       const pending = pendingTask()
       labelRef.current.textContent = shown >= 100 ? 'Ready' : pending ? LABELS[pending] : 'Almost there'
 
@@ -60,7 +81,15 @@ export default function Preloader({ onDone }) {
   }, [onDone])
 
   return (
-    <div className="loader" ref={rootRef} role="status" aria-label="Loading">
+    <div
+      className="loader"
+      ref={rootRef}
+      role="progressbar"
+      aria-label="Loading portfolio"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+    >
       <div className="loader__top mono">
         <span>{profile.name}</span>
         <span>Portfolio — {new Date().getFullYear()}</span>

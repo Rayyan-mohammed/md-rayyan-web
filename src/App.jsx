@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-import { MotionConfig } from 'framer-motion'
 import Preloader from './components/Preloader'
 import ParticleStage from './components/ParticleStage'
 import CustomCursor from './components/CustomCursor'
@@ -35,7 +34,7 @@ export default function App() {
   }, [])
 
   return (
-    <MotionConfig reducedMotion="user">
+    <>
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
@@ -57,6 +56,6 @@ export default function App() {
       </main>
       <Footer />
       <PageEffects />
-    </MotionConfig>
+    </>
   )
 }

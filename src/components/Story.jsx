@@ -1,23 +1,30 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { gsap, ScrollTrigger } from '../lib/gsap'
 import { maskLines } from '../lib/split'
+import { SHAPE_INDEX, SHAPE_NAMES } from '../lib/shapes'
 import { scrollToTarget } from '../lib/smooth'
 import { stage } from '../lib/stage'
-import { storyChapters } from '../data/content'
+import { useReducedMotion } from '../lib/useReducedMotion'
+import { storyChapters, labels } from '../data/content'
 import './Story.css'
 
 const N = storyChapters.length
 const pad = (n) => String(n).padStart(2, '0')
+const shapeIndex = (chapter, i) => SHAPE_INDEX[chapter.shape] ?? Math.min(i + 1, SHAPE_NAMES.length - 1)
 
 // Pinned chapters. Each one morphs the particle object into a new shape and
-// reveals its headline line by line out of overflow masks.
+// reveals its headline line by line out of overflow masks. Reduced motion gets
+// the same copy as a plain vertical list with no pinning.
 export default function Story() {
   const rootRef = useRef(null)
   const pinRef = useRef(null)
   const stRef = useRef(null)
   const [active, setActive] = useState(-1)
+  const reduced = useReducedMotion()
 
   useLayoutEffect(() => {
+    if (reduced) return
+
     const root = rootRef.current
     const chapters = [...root.querySelectorAll('.chapter')]
     const lineSets = chapters.map(() => [])
@@ -77,7 +84,7 @@ export default function Story() {
         if (idx >= 0 && idx < N) show(idx)
         setActive(idx >= 0 && idx < N ? idx : -1)
         if (idx < 0) stage.setShape(0)
-        else if (idx < N) stage.setShape(idx + 1)
+        else if (idx < N) stage.setShape(shapeIndex(storyChapters[idx], idx))
       }
 
       stRef.current = ScrollTrigger.create({
@@ -120,7 +127,7 @@ export default function Story() {
       offs.forEach((off) => off())
       ctx.revert()
     }
-  }, [])
+  }, [reduced])
 
   const jump = (i) => {
     const st = stRef.current
@@ -128,11 +135,32 @@ export default function Story() {
     scrollToTarget(st.start + ((i + 0.5) / N) * (st.end - st.start), { duration: 1.6 })
   }
 
+  if (reduced) {
+    return (
+      <section id="story" className="story story--static" data-bg="dark" aria-label="How I work">
+        <div className="container story__static">
+          <p className="story__label story__label--static mono">{labels.story}</p>
+          <div className="story__stack story__stack--static">
+            {storyChapters.map((c, i) => (
+              <article className="chapter chapter--static" key={c.title}>
+                <p className="chapter__meta mono">
+                  {pad(i + 1)} <span>/ {pad(N)}</span>
+                </p>
+                <h2 className="chapter__title">{c.title}</h2>
+                <p className="chapter__body">{c.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section id="story" className="story" ref={rootRef} data-bg="dark" aria-label="How I work">
       <div className="story__pin" ref={pinRef}>
         <div className="container story__inner">
-          <p className="story__label mono">How I work</p>
+          <p className="story__label mono">{labels.story}</p>
           <div className="story__stack">
             {storyChapters.map((c, i) => (
               <article className="chapter" key={c.title} aria-hidden={active !== i}>
@@ -164,7 +192,7 @@ export default function Story() {
             className={`rail__item mono ${active === i ? 'rail__item--on' : ''}`}
             onClick={() => jump(i)}
             aria-label={`Chapter ${i + 1}: ${c.title}`}
-            aria-current={active === i}
+            aria-current={active === i ? 'step' : undefined}
           >
             {pad(i + 1)}
           </button>
