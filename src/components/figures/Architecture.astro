@@ -1,0 +1,141 @@
+---
+// Layered system diagram in HTML, so labels stay legible at any width.
+import type { ArchStage } from './types';
+
+interface Props {
+  stages: ArchStage[];
+  fig: string;
+  caption: string;
+  legend?: boolean;
+  source?: { href: string; label: string };
+}
+const { stages, fig, caption, legend = true, source } = Astro.props;
+---
+<figure class="figure arch">
+  <ol class="arch__stages">
+    {stages.map((s, i) => (
+      <li class="arch__stage">
+        <span class="arch__label">{String(i + 1).padStart(2, '0')} · {s.stage}</span>
+        <div class="arch__boxes">
+          {s.boxes.map((b) => (
+            <div class:list={['arch__box', `arch__box--${b.owner}`]}>
+              <b>{b.name}</b>
+              <span>{b.detail}</span>
+              {b.owner === 'mine' && <span class="visually-hidden">(built by me)</span>}
+              {b.owner === 'shared' && <span class="visually-hidden">(co-owned)</span>}
+            </div>
+          ))}
+        </div>
+      </li>
+    ))}
+  </ol>
+  {legend && (
+    <p class="arch__legend" aria-hidden="true">
+      <span><i class="k k--mine"></i>Built by me</span>
+      <span><i class="k k--shared"></i>Co-owned with a teammate</span>
+      <span><i class="k k--other"></i>Teammate or infrastructure</span>
+    </p>
+  )}
+  <figcaption><b>{fig}</b> {caption} {source && <a class="source" href={source.href}>{source.label} ↗</a>}</figcaption>
+</figure>
+
+<style>
+  .arch__stages {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0;
+  }
+  .arch__stage {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: var(--space-4);
+    position: relative;
+    padding-block: var(--space-3);
+  }
+  .arch__stage + .arch__stage::before {
+    content: '';
+    position: absolute;
+    left: calc(8.5rem + var(--space-4) + 20px);
+    top: -6px;
+    width: 1px;
+    height: 18px;
+    background: var(--rule-strong);
+  }
+  .arch__label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--ink-3);
+    padding-top: 12px;
+  }
+  .arch__boxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: var(--space-3);
+  }
+  .arch__box {
+    display: grid;
+    gap: 2px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--rule-strong);
+    background: var(--surface);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+  .arch__box b {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .arch__box span {
+    color: var(--ink-2);
+  }
+  .arch__box--mine {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .arch__box--shared {
+    border-color: var(--accent);
+    border-style: dashed;
+  }
+  .arch__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    font-size: 0.75rem;
+    color: var(--ink-3);
+  }
+  .arch__legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .k {
+    width: 14px;
+    height: 10px;
+    border-radius: 3px;
+    border: 1px solid var(--rule-strong);
+    background: var(--surface);
+  }
+  .k--mine {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .k--shared {
+    border-color: var(--accent);
+    border-style: dashed;
+  }
+  @media (max-width: 640px) {
+    .arch__stage {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+    .arch__label {
+      padding-top: 0;
+    }
+    .arch__stage + .arch__stage::before {
+      display: none;
+    }
+  }
+</style>

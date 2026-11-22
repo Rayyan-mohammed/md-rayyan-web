@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import PaperEntry from '../components/PaperEntry.astro';
+import { papers } from '../data/research';
+import { site } from '../data/site';
+
+const scholarly = papers
+  .filter((p) => p.status !== 'Ongoing')
+  .map((p) => ({
+    '@context': 'https://schema.org',
+    '@type': 'ScholarlyArticle',
+    headline: p.title,
+    author: p.authors.map((a) => (a.me ? { '@id': `${site.url}/#person` } : { '@type': 'Person', name: a.name })),
+    datePublished: p.id === 'argus' ? '2026-09-30' : '2026-10',
+    abstract: p.summary,
+    url: p.links[0]?.href,
+  }));
+---
+<Base
+  title="Research"
+  description="Papers by MD Rayyan: Obscuron (IEEE ICAESIS-2026), Argus (arXiv:2609.39067) and CALIBER (ongoing), with abstracts, roles and links."
+  image="/og/research.png"
+  imageAlt="Research by MD Rayyan: two papers in 2026 and one in progress."
+  jsonLd={scholarly}
+>
+  <header class="cs-head">
+    <div class="container">
+      <p class="crumbs"><a href="/">Home</a> / Research</p>
+      <h1>Research</h1>
+      <p class="cs-sub">Two papers in 2026 and one in progress, all on the same question: how big is the gap between a metric and the claim it is used to support?</p>
+    </div>
+  </header>
+  <section class="section">
+    <div class="container">
+      <div class="papers">
+        {papers.map((paper) => <PaperEntry paper={paper} full />)}
+      </div>
+      <p class="note">My name is underlined in each author list. Every entry says which part of the work was mine; the repositories hold the code, the numbered decision logs and the stated limitations.</p>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,124 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import Architecture from '../../components/figures/Architecture.astro';
+import BarChart from '../../components/figures/BarChart.astro';
+import type { ArchStage } from '../../components/figures/types';
+import { obscuronAuroc, obscuronSource } from '../../data/figures';
+import { links, sources } from '../../data/site';
+
+const stages: ArchStage[] = [
+  {
+    stage: 'Freeze',
+    boxes: [
+      { name: 'Snapshot T0', detail: 'GTDB R207 (Apr 2022) and Pfam 35.0 (Nov 2021): what was known then', owner: 'shared' },
+      { name: 'Snapshot T1', detail: 'Pfam 37.0 (Jun 2024) as a proxy for what was characterised since', owner: 'shared' },
+    ],
+  },
+  {
+    stage: 'Label',
+    boxes: [
+      { name: 'Snapshot differencing', detail: '1,341,100 proteins from 502 genomes; dark at T0 and characterised by T1 = 4,138 positives', owner: 'mine' },
+    ],
+  },
+  {
+    stage: 'Embed',
+    boxes: [
+      { name: 'ESM-2 650M', detail: 'Protein model; pretraining predates T0, so it is the leakage-clean arm', owner: 'mine' },
+      { name: 'Genos-m 4.7B', detail: 'Genome model; its pretraining overlaps the window, so it runs as a controlled comparison', owner: 'shared' },
+    ],
+  },
+  {
+    stage: 'Score',
+    boxes: [
+      { name: 'Extreme-value scorer', detail: 'kNN distance to known proteins, calibrated with a generalised Pareto tail into a p-value', owner: 'shared' },
+      { name: 'Further layers', detail: 'Structure-aware embeddings, immune-style negative selection, multi-signal convergence, coding statistics', owner: 'other' },
+    ],
+  },
+];
+---
+<CaseStudy
+  slug="obscuron"
+  title="Obscuron"
+  subtitle="Calibrated novelty detection for proteins no database can name, graded against what science characterised later."
+  description="Obscuron: calibrated novelty detection for microbial dark matter with leakage-controlled retrospective validation. 0.962 held-out-family AUROC; presented at IEEE ICAESIS-2026."
+  meta={[
+    { label: 'My role', value: 'Co-author · implementation and experiments', mine: true },
+    { label: 'Team', value: 'Two tracks with Angshuman Chakravertty (design and analysis); paper with N. Vurukonda and D. Dey' },
+    { label: 'Venue', value: 'IEEE ICAESIS-2026, presented October 2026' },
+    { label: 'Stack', value: 'PyTorch, Hugging Face, ESM-2, ProstT5, SciPy, AWS GPU' },
+  ]}
+  links={[
+    { label: 'Code', href: sources.obscuron.repo },
+    { label: 'Project page', href: sources.obscuron.page },
+    { label: 'Decision log', href: sources.obscuron.decisions },
+    { label: 'Reproducibility notes', href: sources.obscuron.reproducibility },
+  ]}
+  stats={[
+    { value: '0.962', label: 'mean held-out-family AUROC across 903 Pfam families' },
+    { value: '1.34M', label: 'proteins scanned across 502 genomes' },
+    { value: '0.47', label: 'AUROC of novelty for predicting what gets characterised next: chance' },
+  ]}
+  prev={{ href: '/work/bharathealth', title: 'BharatHealth Analyst' }}
+  next={{ href: '/work/argus', title: 'Argus' }}
+>
+  <h2 id="problem"><span class="n">01</span>The problem</h2>
+  <p>Most microbial genes have no known function, because function is assigned by similarity to something already characterised. In our 502-genome panel, <strong>297,798 of 1,341,100 proteins (22.21%) matched no Pfam family at all</strong>.</p>
+  <p>That absence is also the trap. A detector that claims to find the interesting “dark” proteins has no ground truth to be checked against, so its scores are easy to report and hard to believe.</p>
+
+  <h2 id="idea"><span class="n">02</span>The idea: manufacture ground truth from the past</h2>
+  <p>Freeze the reference databases at a 2021–22 snapshot, score every protein that was dark then, and grade those scores against a later snapshot in which some of them have since been characterised. The label is history, not opinion.</p>
+  <p>The benchmark had to clear a gate before any scorer ran: at least 50–100 positives, pre-registered. It found <strong>4,138 (0.309%)</strong>, 41–83 times the floor. The three evaluation metrics were frozen at the same time: held-out-family AUROC, retrospective precision at K with lift, and calibration reliability.</p>
+  <Architecture
+    stages={stages}
+    fig="Fig. 1"
+    caption="The retrospective benchmark and the core scorer. Solid green: built by me. Dashed: designed by Angshuman Chakravertty, implemented by me."
+    source={{ href: sources.obscuron.readme, label: 'repository README' }}
+  />
+
+  <h2 id="results"><span class="n">03</span>Results</h2>
+  <p>The core scorer is a kNN distance in ESM-2 embedding space, calibrated with an extreme-value tail fit so that its output is a p-value with a checkable false-flag rate, not a raw distance. Taking embeddings from layer 22 rather than the last layer was the difference between 0.786 and 0.962.</p>
+  <BarChart
+    rows={obscuronAuroc}
+    min={0.4}
+    max={1}
+    reference={{ value: 0.5, label: 'chance (0.5)' }}
+    fig="Fig. 2"
+    ariaLabel="Held-out-family AUROC: ESM-2 layer 22 0.962, ESM-2 last layer 0.786, Genos-m layer 9 0.665; novelty predicting later characterisation 0.47."
+    caption="Held-out-family AUROC across 903 Pfam families (top three), and the negative result (bottom)."
+    source={obscuronSource}
+    panel
+  />
+  <p>Observed false-flag rates matched the nominal level. The dark genes are also genuinely coding: codon-position bias and k-mer entropy separate them from shuffled and Markov nulls with an AUROC of 0.94, so the benchmark rests on real reading frames, not spurious calls.</p>
+
+  <h2 id="leakage"><span class="n">04</span>Leakage, handled on purpose</h2>
+  <p>Foundation models can score well simply because their pretraining saw the answer. ESM-2’s training data predates the benchmark window, so it is the headline arm. The genome model Genos-m was pretrained on GTDB R220, which sits inside the window, so it runs only as a controlled comparison.</p>
+  <p>On a matched 300-family comparison, ESM-2 scores 0.988 against Genos-m’s 0.739. The model with a possible leakage advantage does worse, so the ESM-2 headline is not a leakage artefact.</p>
+
+  <h2 id="negative"><span class="n">05</span>The finding we did not want</h2>
+  <p>On the 4,138 positives themselves, novelty ranks at chance (AUROC 0.47 against proteins that stayed dark). <strong>The most novel proteins are not the ones science characterises next.</strong> The paper reports this instead of smoothing it over: the detector finds what is unlike anything known, which is a different question from what will be studied soon.</p>
+
+  <h2 id="what-didnt-hold"><span class="n">06</span>Limitations</h2>
+  <div class="callout">
+    <p class="callout__label">Limitations, as stated in the repository</p>
+    <ul>
+      <li>“Characterised later” is a Pfam-37 net-new-family proxy, not a full InterProScan run, so the positive count is a floor.</li>
+      <li>The leakage-controlled genome arm may still be affected by pretraining overlap; a direct test neither confirmed nor ruled that out.</li>
+      <li>There is no wet-lab validation: every result is a computational prioritisation signal.</li>
+      <li>Automated tests are minimal; correctness rests on logged manual runs.</li>
+    </ul>
+  </div>
+
+  <h2 id="my-part"><span class="n">07</span>My part</h2>
+  <div class="callout callout--mine">
+    <p class="callout__label">What I built</p>
+    <p>The implementation and experimental-execution track: ingestion and snapshot differencing, embedding extraction, the extreme-value scorer, the immune-layer sweeps, the full-scale flagging infrastructure and the reproducibility tooling.</p>
+    <p><a href={links.coauthor}>Angshuman Chakravertty</a> owned the other track: methodology, design and analysis, including the scorer’s design and the immune layer. The paper is co-authored with N. Vurukonda and D. Dey.</p>
+  </div>
+
+  <h2 id="paper"><span class="n">08</span>Paper</h2>
+  <p><strong>Calibrated Novelty Detection for Microbial Dark Matter via Leakage-Controlled Retrospective Validation.</strong> A. Chakravertty, MD Rayyan, N. Vurukonda and D. Dey. Proc. IEEE ICAESIS-2026, Mohan Babu University, Tirupati, India, October 2026. Paper ID 1273; accepted and presented.</p>
+  <p class="link-row">
+    <a href="/research#obscuron">Research entry <span class="arrow" aria-hidden="true">→</span></a>
+    <a href={sources.obscuron.repo}>Code <span class="arrow" aria-hidden="true">↗</span></a>
+  </p>
+</CaseStudy>

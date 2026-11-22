@@ -1,0 +1,57 @@
+---
+import type { Featured } from '../data/work';
+
+interface Props {
+  project: Featured;
+  feature?: boolean;
+}
+const { project, feature = false } = Astro.props;
+const titleHref = project.caseStudy ?? project.links[0]?.href;
+const external = (href: string) => href.startsWith('http');
+---
+<article class:list={['card', { 'card--feature': feature }]} aria-labelledby={`card-${project.slug}`}>
+  <div class="card__text">
+    <div class="card__meta">
+      <span class="chip chip--mine">{project.role}</span>
+      <span class="card__year">{project.year}</span>
+    </div>
+    <div>
+      <h3 class="card__title" id={`card-${project.slug}`}>
+        <a class={project.caseStudy ? `vt-${project.slug}` : undefined} href={titleHref}>{project.title}</a>
+      </h3>
+      <p class="card__subtitle">{project.subtitle}</p>
+    </div>
+    <div class="card__body">
+      <p>{project.problem}</p>
+      <p class="card__result">
+        {project.result} <a class="source" href={project.resultSource}>source ↗</a>
+      </p>
+      <p class="card__limit"><span><b>{project.limit.label}:</b> {project.limit.text}</span></p>
+    </div>
+    {!feature && <slot />}
+    <p class="link-row">
+      {project.links.map((link) => (
+        <a href={link.href}>
+          {link.label} <span class="arrow" aria-hidden="true">{external(link.href) ? '↗' : '→'}</span>
+        </a>
+      ))}
+    </p>
+  </div>
+  {feature && (
+    <div class="card__figure">
+      <slot />
+    </div>
+  )}
+</article>
+
+<style>
+  .card__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    height: 100%;
+  }
+  .card--feature .card__figure {
+    align-self: center;
+  }
+</style>

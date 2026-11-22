@@ -1,0 +1,107 @@
+---
+// Replay of the real EKS Spot drain (Argus, Objective 1). Without JavaScript the
+// event list reads as a plain timeline; with it, a scrubber steps through it.
+import { sources } from '../../data/site';
+
+const events = [
+  { t: 0, stamp: '12:26:18', text: 'Node Termination Handler receives the EC2 Spot interruption warning. Training is live at epoch 7.' },
+  { t: 1, stamp: '12:26:19', text: 'Drain requested; the training pod is evicted with a graceful SIGTERM.' },
+  { t: 1, stamp: '12:26:19', text: 'The SIGTERM handler writes the epoch-8 checkpoint to S3.' },
+  { t: 7, stamp: '12:26:25', text: 'Node cordoned and drained.' },
+  { t: 75, stamp: '≈ +75 s', text: 'Replacement pod on a healthy node logs “Resuming from epoch 8”. Only the in-progress epoch is lost.' },
+];
+const end = 80;
+---
+<figure class="figure" id="drain">
+  <div class="replay" data-replay data-end={end}>
+    <div class="replay__head">
+      <span class="replay__clock" data-replay-clock>T + 0 s</span>
+      <div class="replay__controls">
+        <button class="btn btn--small" type="button" data-replay-play hidden>Play</button>
+        <button class="btn btn--small" type="button" data-replay-reset hidden>Reset</button>
+      </div>
+    </div>
+    <label class="visually-hidden" for="replay-range">Seconds since the interruption warning</label>
+    <input id="replay-range" type="range" min="0" max={end} step="1" value={end} data-replay-range hidden />
+    <ol class="replay__events">
+      {events.map((e) => (
+        <li data-t={e.t}><time>{e.stamp}</time><span>{e.text}</span></li>
+      ))}
+    </ol>
+    <p class="replay__state" aria-live="polite" data-replay-state></p>
+  </div>
+  <figcaption>
+    <b>Fig. 2</b> A real Spot drain on AWS EKS (c5.xlarge / m5.xlarge Spot nodes, IRSA, Node Termination Handler in queue mode), times in UTC.
+    <a class="source" href={sources.argus.objective1}>objective1_result.md ↗</a>
+  </figcaption>
+</figure>
+
+<style>
+  .replay__controls {
+    display: flex;
+    gap: var(--space-2);
+  }
+  .replay__events span {
+    min-width: 0;
+  }
+</style>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-replay]')) {
+    const range = root.querySelector<HTMLInputElement>('[data-replay-range]')!;
+    const clock = root.querySelector<HTMLElement>('[data-replay-clock]')!;
+    const state = root.querySelector<HTMLElement>('[data-replay-state]')!;
+    const play = root.querySelector<HTMLButtonElement>('[data-replay-play]')!;
+    const reset = root.querySelector<HTMLButtonElement>('[data-replay-reset]')!;
+    const items = [...root.querySelectorAll<HTMLLIElement>('li[data-t]')];
+    const end = Number(root.dataset.end);
+    let timer: number | undefined;
+
+    const render = (t: number) => {
+      clock.textContent = `T + ${t} s`;
+      let current: HTMLLIElement | undefined;
+      for (const li of items) {
+        const past = Number(li.dataset.t) <= t;
+        li.classList.toggle('is-past', past);
+        li.classList.toggle('is-current', false);
+        if (past) current = li;
+      }
+      current?.classList.add('is-current');
+      state.textContent = current ? current.querySelector('span')!.textContent ?? '' : '';
+    };
+    const stop = () => {
+      if (timer) window.clearInterval(timer);
+      timer = undefined;
+      play.textContent = 'Play';
+    };
+
+    range.hidden = false;
+    play.hidden = false;
+    reset.hidden = false;
+    root.classList.add('is-enhanced');
+    range.value = '0';
+    render(0);
+
+    range.addEventListener('input', () => {
+      stop();
+      render(Number(range.value));
+    });
+    reset.addEventListener('click', () => {
+      stop();
+      range.value = '0';
+      render(0);
+    });
+    play.addEventListener('click', () => {
+      if (timer) return stop();
+      if (Number(range.value) >= end) range.value = '0';
+      play.textContent = 'Pause';
+      // 8x real time: the 80 s replay takes 10 s.
+      timer = window.setInterval(() => {
+        const next = Math.min(end, Number(range.value) + 1);
+        range.value = String(next);
+        render(next);
+        if (next >= end) stop();
+      }, 125);
+    });
+  }
+</script>

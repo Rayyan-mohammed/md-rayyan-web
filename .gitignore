@@ -24,3 +24,7 @@ Thumbs.db
 
 # personal source docs (not for the public repo)
 *.docx
+
+# local tooling
+.claude/
+.astro/

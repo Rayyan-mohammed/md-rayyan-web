@@ -1,0 +1,75 @@
+---
+import Base from './Base.astro';
+import type { Link } from '../data/work';
+import { site } from '../data/site';
+
+interface Props {
+  slug: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  meta: { label: string; value: string; mine?: boolean }[];
+  links: Link[];
+  stats: { value: string; label: string }[];
+  next: { href: string; title: string };
+  prev?: { href: string; title: string };
+}
+
+const { slug, title, subtitle, description, meta, links, stats, next, prev } = Astro.props;
+const external = (href: string) => href.startsWith('http');
+const article = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: `${title}: ${subtitle}`,
+  description,
+  author: { '@id': `${site.url}/#person` },
+  url: `${site.url}/work/${slug}`,
+  dateModified: site.lastUpdated,
+  image: `${site.url}/og/${slug}.png`,
+};
+---
+<Base
+  title={title}
+  description={description}
+  image={`/og/${slug}.png`}
+  imageAlt={`${title}: ${subtitle}`}
+  type="article"
+  jsonLd={[article]}
+>
+  <header class="cs-head">
+    <div class="container">
+      <p class="crumbs"><a href="/#work">Work</a> / {title}</p>
+      <h1 class={`vt-${slug}`}>{title}</h1>
+      <p class="cs-sub">{subtitle}</p>
+      <dl class="cs-meta">
+        {meta.map((m) => (
+          <div>
+            <dt>{m.label}</dt>
+            <dd class:list={{ mine: m.mine }}>{m.value}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="link-row">
+        {links.map((l) => (
+          <a href={l.href}>{l.label} <span class="arrow" aria-hidden="true">{external(l.href) ? '↗' : '→'}</span></a>
+        ))}
+      </p>
+    </div>
+  </header>
+  <div class="container reading">
+    <article class="prose">
+      <div class="pull-stat">
+        {stats.map((s) => (
+          <div><b>{s.value}</b><span>{s.label}</span></div>
+        ))}
+      </div>
+      <slot />
+    </article>
+  </div>
+  <div class="container">
+    <nav class="cs-next" aria-label="More case studies">
+      {prev ? <a href={prev.href}><span>← Previous</span><b>{prev.title}</b></a> : <a href="/#work"><span>← Back</span><b>All work</b></a>}
+      <a href={next.href}><span>Next →</span><b>{next.title}</b></a>
+    </nav>
+  </div>
+</Base>

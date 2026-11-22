@@ -1,0 +1,134 @@
+---
+// Point estimates with 95% intervals: the "measured, not asserted" motif.
+import type { IntervalRow } from './types';
+
+interface Props {
+  rows: IntervalRow[];
+  min: number;
+  max: number;
+  reference?: { value: number; label: string };
+  ariaLabel: string;
+  fig?: string;
+  caption: string;
+  source?: { href: string; label: string };
+}
+
+const { rows, min, max, reference, ariaLabel, fig, caption, source } = Astro.props;
+const x = (v: number) => ((v - min) / (max - min)) * 100;
+const ticks: number[] = [];
+for (let t = Math.ceil(min * 10) / 10; t <= max + 1e-9; t += 0.1) ticks.push(Math.round(t * 10) / 10);
+---
+<figure class="figure interval">
+  <div class="interval__rows" role="img" aria-label={ariaLabel}>
+    {rows.map((row) => (
+      <div class:list={['interval__row', row.tone && `interval__row--${row.tone}`]}>
+        <span class="interval__label">{row.label}</span>
+        <svg class="interval__plot" viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          {ticks.map((t) => (
+            <line class="interval__grid" x1={x(t)} x2={x(t)} y1="0" y2="16" vector-effect="non-scaling-stroke"></line>
+          ))}
+          {reference && (
+            <line class="interval__ref" x1={x(reference.value)} x2={x(reference.value)} y1="0" y2="16" vector-effect="non-scaling-stroke"></line>
+          )}
+          <rect class="interval__whisker" x={x(row.lo)} y="7" width={x(row.hi) - x(row.lo)} height="2"></rect>
+          <rect class="interval__point" x={x(row.value) - 0.6} y="3" width="1.2" height="10"></rect>
+        </svg>
+        <span class="interval__value mono">{row.value.toFixed(2)} <span>[{row.lo.toFixed(2)}, {row.hi.toFixed(2)}]</span></span>
+      </div>
+    ))}
+    <div class="interval__row interval__axis" aria-hidden="true">
+      <span></span>
+      <span class="interval__ticks">
+        <span>{min.toFixed(1)}</span>
+        <span>{(min + (max - min) / 2).toFixed(1)}</span>
+        <span>{max.toFixed(1)}</span>
+      </span>
+      <span></span>
+    </div>
+  </div>
+  <figcaption>
+    {fig && <b>{fig}</b>} {caption}
+    {reference && <span> Dashed line: {reference.label}.</span>}
+    {source && <> <a class="source" href={source.href}>{source.label} ↗</a></>}
+  </figcaption>
+</figure>
+
+<style>
+  .interval__rows {
+    display: grid;
+    gap: 8px;
+  }
+  .interval__row {
+    display: grid;
+    grid-template-columns: minmax(0, 13rem) minmax(0, 1fr) 7.5rem;
+    align-items: center;
+    gap: 12px;
+  }
+  .interval__label {
+    font-size: 0.8125rem;
+    line-height: 1.3;
+    color: var(--ink-2);
+  }
+  .interval__row--caution .interval__label,
+  .interval__row--mine .interval__label {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .interval__plot {
+    width: 100%;
+    height: 18px;
+    overflow: visible;
+  }
+  .interval__grid {
+    stroke: var(--rule);
+    stroke-width: 1;
+  }
+  .interval__ref {
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 3;
+  }
+  .interval__whisker {
+    fill: var(--ink-3);
+  }
+  .interval__point {
+    fill: var(--ink);
+  }
+  .interval__row--caution .interval__whisker,
+  .interval__row--caution .interval__point {
+    fill: var(--caution);
+  }
+  .interval__row--mine .interval__whisker,
+  .interval__row--mine .interval__point {
+    fill: var(--accent);
+  }
+  .interval__value {
+    font-size: 0.8125rem;
+    color: var(--ink);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .interval__value span {
+    color: var(--ink-3);
+    font-size: 0.75rem;
+  }
+  .interval__ticks {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--ink-3);
+  }
+  @media (max-width: 560px) {
+    .interval__row {
+      grid-template-columns: minmax(0, 1fr) 7rem;
+      row-gap: 2px;
+    }
+    .interval__label {
+      grid-column: 1 / -1;
+    }
+    .interval__axis {
+      display: none;
+    }
+  }
+</style>

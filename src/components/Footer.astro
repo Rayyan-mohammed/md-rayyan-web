@@ -1,0 +1,45 @@
+---
+import { links, site } from '../data/site';
+
+const updated = new Date(site.lastUpdated + 'T00:00:00Z').toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+---
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__grid">
+      <div>
+        <h2>MD Rayyan</h2>
+        <p>ML systems and the evaluations that decide whether to trust them. Final-year B.Tech CSE (Data Science), SVKM's NMIMS Hyderabad, graduating June 2027.</p>
+        <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+      </div>
+      <div>
+        <h2>This site</h2>
+        <ul>
+          <li><a href="/#work">Selected work</a></li>
+          <li><a href="/research">Research</a></li>
+          <li><a href="/work/argus">Argus case study</a></li>
+          <li><a href="/work/bharathealth">BharatHealth case study</a></li>
+          <li><a href="/work/obscuron">Obscuron case study</a></li>
+          <li><a href={site.cv} download="MD_Rayyan_CV.pdf">CV (PDF)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href={links.github}>GitHub</a></li>
+          <li><a href={links.linkedin}>LinkedIn</a></li>
+          <li><a href={links.arxiv}>arXiv</a></li>
+          <li><a href={links.credly}>Credly</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="site-footer__base">
+      <span>© {new Date().getFullYear()} MD Rayyan</span>
+      <span>Last updated <time datetime={site.lastUpdated}>{updated}</time> · <a href={links.source}>Source</a></span>
+    </div>
+  </div>
+</footer>

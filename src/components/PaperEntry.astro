@@ -1,0 +1,79 @@
+---
+import type { Paper } from '../data/research';
+
+interface Props {
+  paper: Paper;
+  full?: boolean;
+}
+const { paper, full = false } = Astro.props;
+const chipClass = {
+  Presented: 'chip--presented',
+  Preprint: 'chip--preprint',
+  Ongoing: 'chip--ongoing',
+}[paper.status];
+const external = (href: string) => href.startsWith('http');
+---
+<article class="paper" id={paper.id}>
+  <div class="paper__status">
+    <span class:list={['chip', chipClass]}>{paper.status}</span>
+    <span>{paper.date}</span>
+  </div>
+  <div>
+    <h3 class="paper__title">{paper.title}</h3>
+    <p class="paper__authors">
+      {paper.authors.map((a, i) => (
+        <>
+          {i > 0 && ', '}
+          {a.me ? <span class="me">{a.name}</span> : a.name}
+        </>
+      ))}
+      {paper.authorsNote && <> · {paper.authorsNote}</>}
+    </p>
+    <p class="paper__venue">{paper.venue}</p>
+    <p class="paper__summary">{paper.summary}</p>
+    <p class="paper__part"><b>My part.</b> {paper.part}</p>
+    {paper.note && <p class="paper__part">{paper.note}</p>}
+    <p class="link-row">
+      {paper.links.map((link) => (
+        <a href={link.href}>
+          {link.label} <span class="arrow" aria-hidden="true">{external(link.href) ? '↗' : '→'}</span>
+        </a>
+      ))}
+    </p>
+    {full && paper.bibtex && (
+      <details class="bibtex">
+        <summary>BibTeX</summary>
+        <pre><code>{paper.bibtex}</code></pre>
+      </details>
+    )}
+  </div>
+</article>
+
+<style>
+  .bibtex {
+    margin-top: var(--space-4);
+    font-size: var(--step-0);
+  }
+  .bibtex summary {
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--ink-2);
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .bibtex pre {
+    margin: var(--space-3) 0 0;
+    padding: var(--space-4);
+    overflow-x: auto;
+    background: var(--surface-2);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    line-height: 1.6;
+  }
+  .bibtex code {
+    background: none;
+    padding: 0;
+  }
+</style>

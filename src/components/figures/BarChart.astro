@@ -1,0 +1,123 @@
+---
+// Horizontal bar chart. Labels and values are HTML (crisp at any width);
+// bars are stretched SVG rects sized by attributes, so no inline styles.
+import type { BarRow } from './types';
+
+interface Props {
+  rows: BarRow[];
+  min?: number;
+  max: number;
+  reference?: { value: number; label: string };
+  ariaLabel: string;
+  fig?: string;
+  caption: string;
+  source?: { href: string; label: string };
+  panel?: boolean;
+}
+
+const { rows, min = 0, max, reference, ariaLabel, fig, caption, source, panel = false } = Astro.props;
+const pct = (v: number) => Math.max(0, Math.min(100, ((v - min) / (max - min)) * 100));
+const refPct = reference ? pct(reference.value) : null;
+---
+<figure class:list={['figure', 'chart', { 'figure--panel': panel }]}>
+  <div class="chart__rows" role="img" aria-label={ariaLabel}>
+    {rows.map((row) => (
+      <div class:list={['chart__row', row.tone && `chart__row--${row.tone}`]}>
+        <span class="chart__label">
+          {row.label}
+          {row.note && <span class="chart__note">{row.note}</span>}
+        </span>
+        <svg class="chart__bar" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <rect class="chart__track" x="0" y="0" width="100" height="10"></rect>
+          <rect
+            class:list={[
+              'fig-bar',
+              row.tone === 'mine' && 'fig-bar--mine',
+              row.tone === 'muted' && 'fig-bar--muted',
+              row.tone === 'caution' && 'fig-bar--caution',
+            ]}
+            x="0"
+            y="0"
+            width={pct(row.value)}
+            height="10"
+          ></rect>
+          {refPct !== null && (
+            <line class="chart__ref" x1={refPct} x2={refPct} y1="-2" y2="12" vector-effect="non-scaling-stroke"></line>
+          )}
+        </svg>
+        <span class="chart__value mono">{row.display}</span>
+      </div>
+    ))}
+  </div>
+  <figcaption>
+    {fig && <b>{fig}</b>} {caption}
+    {reference && <span> Line: {reference.label}.</span>}
+    {source && <> <a class="source" href={source.href}>{source.label} ↗</a></>}
+  </figcaption>
+</figure>
+
+<style>
+  .chart__rows {
+    display: grid;
+    gap: 10px;
+  }
+  .chart__row {
+    display: grid;
+    grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) 3.4rem;
+    align-items: center;
+    gap: 12px;
+  }
+  .chart__label {
+    font-size: 0.8125rem;
+    line-height: 1.3;
+    color: var(--ink-2);
+  }
+  .chart__note {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--ink-3);
+  }
+  .chart__row--mine .chart__label,
+  .chart__row--caution .chart__label {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .chart__bar {
+    width: 100%;
+    height: 12px;
+    overflow: visible;
+  }
+  .chart__track {
+    fill: var(--surface-2);
+  }
+  .figure--panel .chart__track {
+    fill: var(--bg);
+  }
+  .chart__ref {
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-dasharray: 2 2;
+  }
+  .chart__value {
+    font-size: 0.8125rem;
+    text-align: right;
+    color: var(--ink);
+  }
+  .chart__row--mine .chart__value {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .chart__row--caution .chart__value {
+    color: var(--caution);
+    font-weight: 600;
+  }
+  @media (max-width: 480px) {
+    .chart__row {
+      grid-template-columns: minmax(0, 1fr) 3.2rem;
+      row-gap: 4px;
+    }
+    .chart__label {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

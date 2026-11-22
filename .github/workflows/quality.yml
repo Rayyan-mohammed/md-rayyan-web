@@ -1,0 +1,36 @@
+name: quality
+
+on:
+  push:
+  schedule:
+    - cron: '0 6 * * 1' # Mondays: catch links that died since the last push
+  workflow_dispatch:
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: CSP hash and inline-style check
+        run: node scripts/check-csp.mjs
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress --max-retries 3 --timeout 30
+            --accept 200,206,429,999
+            --exclude-path dist/_astro
+            --root-dir ${{ github.workspace }}/dist
+            dist/**/*.html
+          fail: true
+      - name: Lighthouse budgets
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./lighthouserc.json
+          temporaryPublicStorage: false

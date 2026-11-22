@@ -1,0 +1,337 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import PaperEntry from '../components/PaperEntry.astro';
+import BarChart from '../components/figures/BarChart.astro';
+import portrait from '../assets/portrait.jpg';
+import { featured, archive } from '../data/work';
+import { papers } from '../data/research';
+import { links, site, sources } from '../data/site';
+import {
+  argusSlowdown,
+  argusSlowdownSource,
+  bharatCategories,
+  bharatSource,
+  obscuronAuroc,
+  obscuronSource,
+  caliberCoverage,
+  caliberSource,
+} from '../data/figures';
+
+const [argus, bharat, obscuron, caliber] = featured;
+
+const proof = [
+  { value: 'IEEE ICAESIS-2026', label: 'Co-author of a paper presented in October 2026', href: '/research#obscuron' },
+  { value: 'arXiv:2609.39067', label: 'Argus preprint on Spot-resilient ML training', href: links.arxiv },
+  { value: '152', label: 'real Spot reclaims measured by a sensor fleet I ran', href: '/work/argus#reclaims' },
+  { value: '200', label: 'question agent benchmark, rescored after four scorer bugs', href: '/work/bharathealth#benchmark' },
+];
+
+const principles = [
+  {
+    title: 'Evaluate before claiming',
+    body: 'BharatHealth is graded on 200 questions with computed ground truth. When four bugs turned up in the scorer, the run was rescored, not re-explained.',
+    href: '/work/bharathealth#scorer-bugs',
+  },
+  {
+    title: 'Leakage is the default failure',
+    body: 'Obscuron keeps a protein model whose pretraining predates the benchmark window apart from a genome model whose pretraining overlaps it.',
+    href: '/work/obscuron#leakage',
+  },
+  {
+    title: 'Calibrate, then trust',
+    body: 'Obscuron’s scores are tail p-values with measured false-flag rates. CALIBER tests when a conformal guarantee survives a change of scanner settings.',
+    href: '/research#caliber',
+  },
+  {
+    title: 'Retract what doesn’t hold',
+    body: 'Argus reports that an earlier model’s 21.8× lift fell to 2.2× on later data, and that price history has no skill on real reclaims.',
+    href: '/work/argus#what-didnt-hold',
+  },
+];
+
+const leadership = [
+  {
+    title: 'Head, Code IT Club',
+    org: 'SVKM’s NMIMS Hyderabad',
+    date: '2025–now',
+    desc: 'Set the club’s technical programme: 10+ events including webathons and hackathons, reaching 500+ students. Organised the university’s internal round of Smart India Hackathon 2026.',
+  },
+  {
+    title: 'Student Ambassador, Google Cloud Foundations',
+    org: '7 campuses',
+    date: '2024–25',
+    desc: 'Represented the programme across 7 campuses and engaged 500+ students on cloud certifications.',
+  },
+  {
+    title: 'Student Engagement Lead, ELGE Club',
+    org: 'SVKM’s NMIMS Hyderabad',
+    date: '2025',
+    desc: 'Ran 3+ industry workshops end to end, with 400+ Google Cloud certification sign-ups.',
+  },
+  {
+    title: 'Social Media Manager, CyberOwls Club',
+    org: 'SVKM’s NMIMS Hyderabad',
+    date: '',
+    desc: '',
+  },
+  {
+    title: 'Volunteer, HackTrek 1.0',
+    org: '',
+    date: '',
+    desc: '',
+  },
+  {
+    title: 'Community service, Sannidhi Orphan Home',
+    org: '',
+    date: '',
+    desc: '',
+  },
+];
+
+const awards = [
+  { title: 'Winner, NMIMS TechFestia’25 hackathon', date: '2025', desc: 'DigiElev8, a growth dashboard for small businesses, among 30 teams.' },
+  { title: 'Paper presented, IEEE ICAESIS-2026', date: '2026', desc: 'Obscuron, at Mohan Babu University, Tirupati.' },
+  { title: 'Top 20%, NMIMS Research Symposium', date: '2026', desc: 'Plantora, an AI-based smart agriculture system.' },
+  { title: 'Finalist, Joy of Programming', date: '2024', desc: 'Top 6 of 40+ in competitive programming.' },
+];
+
+const external = (href: string) => href.startsWith('http');
+---
+<Base>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container">
+      <p class="eyebrow">{site.role}</p>
+      <h1 class="hero__title" id="hero-title">I build machine-learning systems, and the evaluations that decide whether to trust them.</h1>
+      <p class="hero__sub">
+        Final-year CSE (Data Science) at SVKM’s NMIMS Hyderabad. Co-author of a paper presented at IEEE ICAESIS-2026 and an arXiv preprint on Spot-resilient training. Every number here links to its source; team work is labelled as team work.
+      </p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="/research">Read the research <span aria-hidden="true">→</span></a>
+        <a class="btn" href="#work">Selected work</a>
+        <a class="btn" href={site.cv} download="MD_Rayyan_CV.pdf">CV <span class="arrow" aria-hidden="true">PDF ↓</span></a>
+      </div>
+      <div class="proof" role="list">
+        {proof.map((p) => (
+          <a class="proof__item" href={p.href} role="listitem">
+            <span class="proof__value">{p.value}</span>
+            <span class="proof__label">{p.label}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="work" aria-labelledby="work-title">
+    <div class="container">
+      <SectionHead index="01" label="Selected work" title="Four projects, each with its evidence and its limits" id="work-title">
+        Green marks the part I built. Every result links to the file that produced it, and every card says what didn’t hold.
+      </SectionHead>
+      <div class="work-grid">
+        <ProjectCard project={argus} feature>
+          <BarChart
+            rows={argusSlowdown}
+            min={1}
+            max={4.5}
+            fig="Fig. 1"
+            ariaLabel="Slowdown versus ideal at 15 nodes with 300-second checkpoints: no protection 4.25, reacting to the notice 4.25, old model 2.48, periodic Young–Daly 1.34, retrained model 1.14, oracle 1.03."
+            caption="Slowdown against ideal at 15 nodes when a checkpoint takes 300 s (1.0 = no loss). Reacting to the notice collapses; the retrained model beats every non-learned policy."
+            source={argusSlowdownSource}
+            panel
+          />
+        </ProjectCard>
+        <ProjectCard project={bharat}>
+          <BarChart
+            rows={bharatCategories}
+            max={100}
+            fig="Fig. 2"
+            ariaLabel="Exact-answer accuracy by category: factual 100%, correlation 81.0%, ranking 66.7%, trend 54.4% before and 84.5% after the routing fix, state comparison 35.8%."
+            caption="Exact-answer accuracy by question category."
+            source={bharatSource}
+          />
+        </ProjectCard>
+        <ProjectCard project={obscuron}>
+          <BarChart
+            rows={obscuronAuroc}
+            min={0.4}
+            max={1}
+            reference={{ value: 0.5, label: 'chance (0.5)' }}
+            fig="Fig. 3"
+            ariaLabel="Held-out-family AUROC: ESM-2 layer 22 0.962, ESM-2 last layer 0.786, Genos-m 0.665; novelty predicting later characterisation 0.47."
+            caption="Held-out-family AUROC across 903 families, and the negative result."
+            source={obscuronSource}
+          />
+        </ProjectCard>
+        <ProjectCard project={caliber}>
+          <BarChart
+            rows={caliberCoverage}
+            min={0.5}
+            max={1}
+            reference={{ value: 0.9, label: 'the 0.90 coverage target' }}
+            fig="Fig. 4"
+            ariaLabel="Coverage on CT under operator shift: naive transfer 0.69, group-conditional calibration 0.90 or better, against a 0.90 target."
+            caption="Coverage on CT when the acquisition operator shifts."
+            source={caliberSource}
+          />
+        </ProjectCard>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="research" aria-labelledby="research-title">
+    <div class="container">
+      <SectionHead index="02" label="Research" title="Papers" id="research-title">
+        Two papers in 2026, both co-authored with Angshuman Chakravertty, each with its code, decision log and limitations in public. The question I keep returning to: how big is the gap between a metric and the claim it is used to support?
+      </SectionHead>
+      <div class="papers">
+        {papers.map((paper) => <PaperEntry paper={paper} />)}
+      </div>
+      <p class="note"><a href="/research">All research, abstracts and BibTeX →</a></p>
+    </div>
+  </section>
+
+  <section class="section" id="principles" aria-labelledby="principles-title">
+    <div class="container">
+      <SectionHead index="03" label="How I work" title="Four habits, each with a receipt" id="principles-title" />
+      <div class="principles">
+        {principles.map((p, i) => (
+          <div class="principle">
+            <span class="principle__n">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{p.title}</h3>
+            <p>{p.body} <a href={p.href}>See it <span aria-hidden="true">→</span></a></p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="more-work" aria-labelledby="more-title">
+    <div class="container">
+      <SectionHead index="04" label="More work" title="Smaller projects and team builds" id="more-title" />
+      <table class="archive">
+        <thead>
+          <tr><th scope="col">Year</th><th scope="col">Project</th><th scope="col">What it is</th><th scope="col"><span class="visually-hidden">Links</span></th></tr>
+        </thead>
+        <tbody>
+          {archive.map((item) => (
+            <tr>
+              <td>{item.year}</td>
+              <td class="archive__name">{item.name}{item.role && <span class="archive__role">{item.role}</span>}</td>
+              <td class="archive__desc">{item.desc}</td>
+              <td class="archive__links">
+                {item.links.map((l) => (
+                  <a href={l.href} aria-label={`${item.name}: ${l.label}`}>{l.label} <span class="arrow" aria-hidden="true">{external(l.href) ? '↗' : '→'}</span></a>
+                ))}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" id="about" aria-labelledby="about-title">
+    <div class="container">
+      <SectionHead index="05" label="About" title="About me" id="about-title" />
+      <div class="about">
+        <div class="about__text">
+          <p>I work on the part of machine learning that starts after the notebook: the system a model runs inside, and the evidence that it does what it claims.</p>
+          <p>On <a href="/work/argus">Argus</a>, I owned the ML layer of a Kubernetes operator that keeps training jobs alive through EC2 Spot reclaims. I then ran a sensor campaign that caught 152 real reclaims, and it showed our price-based predictor had no skill on them. On <a href="/work/obscuron">Obscuron</a>, I built the implementation track for calibrated novelty detection across 1.34 million proteins. On <a href="/work/bharathealth">BharatHealth Analyst</a>, I wrote both the agent and the 200-question benchmark that grades it, and rescored everything when I found four bugs in my own scorer.</p>
+          <p>The habits behind all three: freeze the evaluation before results arrive, check for leakage before quoting a number, and publish the limitation next to the result.</p>
+          <p>Outside research I lead the Code IT Club on campus, where we ran the university’s internal round of Smart India Hackathon 2026.</p>
+          <div class="now">
+            <p class="now__head"><b>Now</b> <span>Updated November 2026</span></p>
+            <ul>
+              <li><b>Real labels for infrastructure ML.</b> Replacing proxy labels with measured ones: Argus’s sensor fleet produced 152 real reclaims, and a capacity-based risk model now serves alongside the price model.</li>
+              <li><b>Failure analysis for vision models.</b> Co-developing <a href={sources.veo}>Vision Error Observatory</a>, which locates where monocular depth models fail and tests the explanations by editing images and re-running the model.</li>
+              <li><b>Theory against measurement.</b> Testing CALIBER’s coverage-gap bound against synthetic operators and measured MRI and CT score banks.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="about__side">
+          <div class="portrait">
+            <Picture src={portrait} alt="MD Rayyan" widths={[320, 480, 720]} sizes="(max-width: 520px) 260px, (max-width: 900px) 220px, 400px" formats={['avif', 'webp']} />
+          </div>
+          <dl class="facts">
+            <div><dt>Studying</dt><dd>B.Tech CSE (Data Science), SVKM’s NMIMS, School of Technology Management & Engineering, Hyderabad</dd></div>
+            <div><dt>Graduating</dt><dd>June 2027 · CGPA 3.51 / 4.0</dd></div>
+            <div><dt>Based in</dt><dd>{site.location}</dd></div>
+            <div><dt>Open to</dt><dd>ML-systems and research-engineering roles, research collaborations, graduate study</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="leadership" aria-labelledby="leadership-title">
+    <div class="container">
+      <SectionHead index="06" label="Leadership & recognition" title="Outside the lab" id="leadership-title" />
+      <div class="two-col">
+        <div>
+          <h3 class="subhead">Leadership & community</h3>
+          <ul class="entry-list">
+            {leadership.map((item) => (
+              <li>
+                <div class="entry__top"><span class="entry__title">{item.title}</span>{item.date && <span class="entry__date">{item.date}</span>}</div>
+                {item.org && <span class="entry__desc">{item.org}</span>}
+                {item.desc && <span class="entry__desc">{item.desc}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 class="subhead">Recognition</h3>
+          <ul class="entry-list">
+            {awards.map((item) => (
+              <li>
+                <div class="entry__top"><span class="entry__title">{item.title}</span><span class="entry__date">{item.date}</span></div>
+                <span class="entry__desc">{item.desc}</span>
+              </li>
+            ))}
+          </ul>
+          <p class="note">Certifications: AWS Academy Graduate (ML Foundations, Cloud Foundations), Google Cloud Computing Foundations with skill badges, Cisco Networking and OS Basics, NPTEL (Python, DBMS). <a href={links.credly}>Verify on Credly ↗</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contact" aria-labelledby="contact-title">
+    <div class="container">
+      <div class="contact">
+        <p class="ruler"><b>07</b> Contact</p>
+        <h2 class="contact__title" id="contact-title">Get in touch</h2>
+        <p class="section-lead">I’m looking for ML-systems and research-engineering roles, research collaborations on evaluation and reliability, and conversations with groups I’d like to join for graduate study. Email is the fastest way to reach me.</p>
+        <div class="contact__mail">
+          <a class="contact__address" href={`mailto:${site.email}`}>{site.email}</a>
+          <button class="btn btn--small" type="button" data-copy={site.email}>Copy</button>
+          <span class="copy-status" aria-live="polite" data-copy-status></span>
+        </div>
+        <p class="link-row">
+          <a href={links.github}>GitHub <span class="arrow" aria-hidden="true">↗</span></a>
+          <a href={links.linkedin}>LinkedIn <span class="arrow" aria-hidden="true">↗</span></a>
+          <a href={links.arxiv}>arXiv <span class="arrow" aria-hidden="true">↗</span></a>
+          <a href={site.cv} download="MD_Rayyan_CV.pdf">CV <span class="arrow" aria-hidden="true">↓</span></a>
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy]')) {
+    const status = button.parentElement?.querySelector<HTMLElement>('[data-copy-status]');
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy ?? '');
+        if (status) status.textContent = 'Copied';
+      } catch {
+        if (status) status.textContent = 'Press Ctrl+C';
+      }
+      setTimeout(() => {
+        if (status) status.textContent = '';
+      }, 2400);
+    });
+  }
+</script>

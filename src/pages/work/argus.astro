@@ -1,0 +1,192 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import Architecture from '../../components/figures/Architecture.astro';
+import DrainReplay from '../../components/figures/DrainReplay.astro';
+import BarChart from '../../components/figures/BarChart.astro';
+import IntervalChart from '../../components/figures/IntervalChart.astro';
+import type { ArchStage } from '../../components/figures/types';
+import { argusSlowdown, argusSlowdownSource, argusReclaims, argusReclaimsSource } from '../../data/figures';
+import { links, sources } from '../../data/site';
+import { papers } from '../../data/research';
+
+const paper = papers.find((p) => p.id === 'argus')!;
+
+const stages: ArchStage[] = [
+  {
+    stage: 'Signal',
+    boxes: [
+      { name: 'Price collector', detail: 'Lambda pulls EC2 Spot price history every 5 min into an S3 feature store', owner: 'mine' },
+      { name: 'Sensor fleet', detail: '315 small Spot instances in 4 regions, logging real reclaims as labels', owner: 'mine' },
+    ],
+  },
+  {
+    stage: 'Predict',
+    boxes: [
+      { name: 'Risk service (FastAPI)', detail: '/predict: price model (gradient-boosted trees). /reclaim_risk: capacity model on placement score and node age', owner: 'mine' },
+    ],
+  },
+  {
+    stage: 'Decide',
+    boxes: [
+      { name: 'kopf operator', detail: 'SpotResilientJob resource; polls risk every minute; threshold set by a 10% alarm budget', owner: 'shared' },
+    ],
+  },
+  {
+    stage: 'Act',
+    boxes: [
+      { name: 'Flush handshake and migration', detail: 'Trigger + acknowledgement in S3, cordon the node, recreate the pod elsewhere, publish an SQS event, then a cooldown', owner: 'shared' },
+      { name: 'Reactive path', detail: 'AWS Node Termination Handler: 2-minute warning → drain → SIGTERM', owner: 'other' },
+    ],
+  },
+  {
+    stage: 'Train',
+    boxes: [
+      { name: 'PyTorch training job', detail: 'Polls the trigger every 5 s, checkpoints to S3, checkpoints again on SIGTERM, resumes from the last epoch', owner: 'mine' },
+      { name: 'Observability', detail: 'Prometheus metrics (argus_risk_score, argus_checkpoints_total) and a Grafana dashboard', owner: 'other' },
+    ],
+  },
+];
+
+const trace = [
+  { policy: 'No protection', a: '4.25', b: '4.25', c: '4.25' },
+  { policy: 'React to the 2-minute notice', a: '1.02', b: '1.02', c: '4.25', bestA: true, bestB: true },
+  { policy: 'Periodic, Young–Daly interval', a: '1.06', b: '1.14', c: '1.34' },
+  { policy: 'Old model alarms (same 10% budget)', a: '1.82', b: '1.92', c: '2.48' },
+  { policy: 'Retrained model alarms', a: '1.06', b: '1.07', c: '1.14', mine: true, bestC: true },
+  { policy: 'Oracle (5-minute perfect warning)', a: '1.01', b: '1.01', c: '1.03' },
+];
+---
+<CaseStudy
+  slug="argus"
+  title="Argus"
+  subtitle="Keeping ML training alive through EC2 Spot reclaims, and finding out when predicting a reclaim actually helps."
+  description="Argus: a Kubernetes operator that checkpoints and migrates ML training ahead of EC2 Spot reclaims. Real-EKS drain, trace-driven benchmark, and 152 real reclaims. Co-authored arXiv preprint."
+  meta={[
+    { label: 'My role', value: 'Co-author · owned the ML layer', mine: true },
+    { label: 'Team', value: 'With Angshuman Chakravertty, who owned the operator' },
+    { label: 'When', value: '2026 · v2 in October' },
+    { label: 'Stack', value: 'PyTorch, XGBoost, FastAPI, Kubernetes (kopf), AWS EKS, S3, Lambda, SQS' },
+  ]}
+  links={[
+    { label: 'Paper (arXiv)', href: sources.argus.paper },
+    { label: 'Code', href: sources.argus.repo },
+    { label: 'Project page', href: sources.argus.page },
+    { label: 'Decision log', href: sources.argus.decisions },
+  ]}
+  stats={[
+    { value: '≈ 75 s', label: 'from the Spot warning to training resumed, on real EKS' },
+    { value: '1.14×', label: 'slowdown with the retrained model, against 1.34× for periodic checkpointing' },
+    { value: '0.53', label: 'AUROC of the price model on 152 real reclaims: no skill' },
+  ]}
+  prev={{ href: '/work/obscuron', title: 'Obscuron' }}
+  next={{ href: '/work/bharathealth', title: 'BharatHealth Analyst' }}
+>
+  <h2 id="question"><span class="n">01</span>The question</h2>
+  <p>EC2 Spot capacity costs 60–90% less than on-demand, but AWS can reclaim it with two minutes’ notice. A long training run that ignores this loses everything since its last checkpoint, every time.</p>
+  <p>There are three ways to protect it: react to the notice, checkpoint on a fixed schedule, or predict the reclaim and move the job early. Prediction sounds best. <strong>We wanted to know when it actually beats the simple options</strong>, and to test it on real infrastructure rather than a simulator alone.</p>
+
+  <h2 id="system"><span class="n">02</span>The system</h2>
+  <p>Argus is a Kubernetes operator with a risk service beside it. When risk crosses a threshold, the operator asks the training pod to flush a checkpoint, waits for the acknowledgement, cordons the node and recreates the pod elsewhere. AWS’s own two-minute warning drives the same recovery path reactively.</p>
+  <p>The checkpoint is deliberately decoupled: the operator only signals, and the training pod owns the flush. The operator never touches training internals.</p>
+  <Architecture
+    stages={stages}
+    fig="Fig. 1"
+    caption="Argus, from price and reclaim signals to a resumed training job. Green marks the parts I built."
+    source={{ href: sources.argus.readme, label: 'repository README' }}
+  />
+
+  <h2 id="drain"><span class="n">03</span>A real drain on EKS</h2>
+  <p>The first objective was survival. On real Spot nodes, with IRSA (no static credentials) and the AWS Node Termination Handler in queue mode, training was live at epoch 7 when the interruption fired. Step through it:</p>
+  <DrainReplay />
+  <div class="callout">
+    <p class="callout__label">Honest scope</p>
+    <p>The interruption was a schema-conformant warning injected into the handler’s queue, not a reclaim issued by AWS. The handler cannot tell the difference, so the drain, SIGTERM, checkpoint and resume path is genuinely exercised. A forced AWS reclaim was blocked by an account-subscription issue.</p>
+  </div>
+
+  <h2 id="benchmark"><span class="n">04</span>When does prediction pay?</h2>
+  <p>Our first benchmark (80 trials: 4 policies, 4 interruption rates, 5 repetitions) showed that reacting to the notice degrades toward no protection once reclaims come faster than about one every two minutes. But it fed the predictive policy a configured lead time, so it could not test prediction itself. Reviewers said so, and they were right.</p>
+  <p>The v2 benchmark replays real eu-north-1 Spot price history, with the model’s own causal risk scores driving the policy, on a synchronous 15-node job. The alarm budget is chosen on a separate calibration slice.</p>
+  <div class="table-wrap wide">
+    <table class="data-table">
+      <caption>Slowdown against ideal (1.0 = no loss) at 15 nodes, by checkpoint cost. Price-spike interruptions, 4–13 October slice. <a class="source" href={sources.argus.trace}>trace_benchmark_result.md ↗</a></caption>
+      <thead>
+        <tr><th scope="col">Policy</th><th scope="col" class="num">10 s checkpoint</th><th scope="col" class="num">60 s</th><th scope="col" class="num">300 s</th></tr>
+      </thead>
+      <tbody>
+        {trace.map((r) => (
+          <tr class:list={{ hl: r.mine }}>
+            <td>{r.policy}</td>
+            <td class:list={['num', { best: r.bestA }]}>{r.a}</td>
+            <td class:list={['num', { best: r.bestB }]}>{r.b}</td>
+            <td class:list={['num', { best: r.bestC }]}>{r.c}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Reacting is best while a checkpoint fits inside the notice.</strong> Once it does not, as with large models, reacting collapses and the retrained model beats every non-learned baseline: 1.14× against 1.34× for Young–Daly, with non-overlapping intervals. The old model would have made things worse. A single node gains nothing.</p>
+  <BarChart
+    rows={argusSlowdown}
+    min={1}
+    max={4.5}
+    fig="Fig. 3"
+    ariaLabel="Slowdown at 15 nodes with 300-second checkpoints: no protection 4.25, reacting 4.25, old model 2.48, Young–Daly 1.34, retrained model 1.14, oracle 1.03."
+    caption="The 300 s column as a chart. Shorter is better."
+    source={argusSlowdownSource}
+    panel
+  />
+
+  <h2 id="model"><span class="n">05</span>The model, and a number that didn’t survive</h2>
+  <p>I retrained the price model in October on about 100 times more data: 8 regions, 768 price series, 20.8k training positives, gradient boosting on engineered features. On an untouched, later test slice it reaches a 101× lift for price spikes (AUROC 0.980), steady across seeds.</p>
+  <p>Two things had to be said next to that number. The model we shipped earlier scores only 2.2× on the same windows; <strong>its 21.8× lift did not hold up out of time</strong>. And a rule that only looks at the clock already gets 4×, because AWS now updates prices hourly. <a class="source" href={sources.argus.model}>wide_model_result.md ↗</a></p>
+
+  <h2 id="reclaims"><span class="n">06</span>Real reclaims: price history has no skill</h2>
+  <p>Everything above uses price spikes as a stand-in for reclaims, because AWS does not publish reclaim labels. So I made some. A fleet of small Spot “sensor” instances ran for two days in four regions (eu-north-1, us-east-1, us-east-2, ap-southeast-1): <strong>315 instances, 152 reclaimed</strong>.</p>
+  <IntervalChart
+    rows={argusReclaims}
+    min={0.4}
+    max={1}
+    reference={{ value: 0.5, label: 'chance' }}
+    fig="Fig. 4"
+    ariaLabel="AUROC for reclaimed within 15 minutes with 95% intervals: price-history model 0.53 [0.47, 0.60]; placement score 0.74 [0.69, 0.80]; instance age 0.75 [0.67, 0.80]; logistic model 0.77 [0.71, 0.83]; pool reclaim rate in other hours 0.85 [0.81, 0.89]."
+    caption="AUROC for “reclaimed within 15 minutes” on 152 real reclaims, with 95% intervals resampled by hour."
+    source={argusReclaimsSource}
+  />
+  <p>The price model is at chance, and price spikes do not coincide with real reclaims. <strong>So the benchmark gain above holds only if reclaims follow price spikes, and on this evidence they don’t.</strong> A model on AWS’s placement score and node age holds up on a held-out day (0.74), held-out pools (0.76) and a held-out region (0.77). It now serves at <code>/reclaim_risk</code>, and the operator can use it instead of the price model.</p>
+
+  <h2 id="what-didnt-hold"><span class="n">07</span>What didn’t hold</h2>
+  <div class="callout">
+    <p class="callout__label">Limitations, as stated in the repository</p>
+    <ul>
+      <li>The real-EKS drain used an injected, schema-conformant warning, not an AWS-issued reclaim.</li>
+      <li>The price model is trained and benchmarked on a proxy label, and has no skill on real reclaims.</li>
+      <li>The capacity model comes from two days of small sensor instances in four regions; long-running training nodes may behave differently.</li>
+      <li>The operator manages each pod individually and does not coordinate every node of one synchronous multi-node job.</li>
+      <li>A Free-Tier restriction gated real Spot on the main account for most of the build, so some mid-project nodes were on-demand.</li>
+    </ul>
+  </div>
+
+  <h2 id="decisions"><span class="n">08</span>Engineering decisions worth keeping</h2>
+  <ul>
+    <li><strong>Signal, don’t reach in.</strong> The flush is a handshake: the operator writes a request id to a trigger file, and the pod echoes it back once the checkpoint is safe.</li>
+    <li><strong>Thresholds from an alarm budget,</strong> chosen on a separate calibration slice, not tuned on the test window.</li>
+    <li><strong>Drills on real infrastructure.</strong> Running the predictive path on a real EKS cluster surfaced five defects, and each was fixed.</li>
+    <li><strong>Cost is a requirement.</strong> After a $66 surprise bill, every cloud session ends with a teardown check.</li>
+    <li><strong>Decisions are written down</strong> in a numbered log next to the code, so reviewers can see why, not only what. <a href={sources.argus.decisions}>Decision log ↗</a></li>
+  </ul>
+
+  <h2 id="my-part"><span class="n">09</span>My part</h2>
+  <div class="callout callout--mine">
+    <p class="callout__label">What I built</p>
+    <p>The ML layer: the feature pipeline, the risk models, the FastAPI prediction service, the PyTorch training job, the benchmark harness and trace simulator, and the real-reclaim sensor campaign. In v2 I also made the operator changes: the flush handshake, the migration cooldown, pod recreation and the capacity risk signal.</p>
+    <p><a href={links.coauthor}>Angshuman Chakravertty</a> designed and built the Kubernetes operator and orchestration layer, and co-wrote the paper.</p>
+  </div>
+
+  <h2 id="paper"><span class="n">10</span>Paper</h2>
+  <p><strong>{paper.title}.</strong> A. Chakravertty, MD Rayyan. {paper.venue} A revised version with the trace-driven benchmark and real reclaims, retitled <em>When Does Predicting Spot Interruptions Beat Checkpointing? A Trace-Driven Study with Real Reclaims</em>, is in the repository.</p>
+  <p class="link-row">
+    <a href={sources.argus.paper}>arXiv <span class="arrow" aria-hidden="true">↗</span></a>
+    <a href={sources.argus.pdf}>PDF <span class="arrow" aria-hidden="true">↗</span></a>
+    <a href="/research#argus">BibTeX <span class="arrow" aria-hidden="true">→</span></a>
+  </p>
+</CaseStudy>

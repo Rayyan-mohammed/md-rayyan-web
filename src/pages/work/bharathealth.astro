@@ -1,0 +1,121 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import Architecture from '../../components/figures/Architecture.astro';
+import BarChart from '../../components/figures/BarChart.astro';
+import type { ArchStage } from '../../components/figures/types';
+import { bharatCategories, bharatSource } from '../../data/figures';
+import { sources } from '../../data/site';
+
+const stages: ArchStage[] = [
+  {
+    stage: 'Data',
+    boxes: [
+      { name: 'DVC pipeline', detail: 'NFHS-5 and NFHS-4 CSVs → 706 districts × 448 columns in Parquet, with a schema checked against the data', owner: 'mine' },
+      { name: 'Vector store', detail: '706 district summaries embedded in ChromaDB with all-MiniLM-L6-v2, locally', owner: 'mine' },
+    ],
+  },
+  {
+    stage: 'Reason',
+    boxes: [
+      { name: 'LangGraph ReAct agent', detail: 'Plans calls across 7 tools: semantic search, pandas and SQL queries, charts, insights, trends, correlations', owner: 'mine' },
+      { name: 'Sandboxed execution', detail: 'LLM-written pandas runs in a restricted exec() with whitelisted globals and a forbidden-token filter', owner: 'mine' },
+    ],
+  },
+  {
+    stage: 'Serve',
+    boxes: [
+      { name: 'FastAPI, 11 endpoints', detail: 'Rate limiting (10 requests per minute per visitor) and request logging', owner: 'mine' },
+      { name: 'Static web app', detail: 'Ask, Explore and Correlate. Explore ships its data inside the page, so it works when the backend is down', owner: 'mine' },
+    ],
+  },
+  {
+    stage: 'Evaluate',
+    boxes: [
+      { name: 'Benchmark harness', detail: '200 questions, programmatically computed ground truth, 5 metrics, checkpointed after every question', owner: 'mine' },
+    ],
+  },
+];
+---
+<CaseStudy
+  slug="bharathealth"
+  title="BharatHealth Analyst"
+  subtitle="An LLM agent that answers questions about India’s district health data, and the 200-question benchmark that keeps it honest."
+  description="BharatHealth Analyst: a LangGraph agent over NFHS-5 data for 706 Indian districts, graded on a 200-question benchmark with computed ground truth. Sole-author project by MD Rayyan."
+  meta={[
+    { label: 'My role', value: 'Sole author', mine: true },
+    { label: 'When', value: 'June–October 2026' },
+    { label: 'Data', value: 'NFHS-5 (2019–21): 706 districts, 72 indicators' },
+    { label: 'Stack', value: 'LangGraph, ChromaDB, pandas, FastAPI, DVC, GitHub Actions' },
+  ]}
+  links={[
+    { label: 'Live site', href: sources.bharat.live },
+    { label: 'Code', href: sources.bharat.repo },
+    { label: 'Technical report', href: sources.bharat.report },
+  ]}
+  stats={[
+    { value: '71.1%', label: 'exact-answer accuracy on 200 questions with computed ground truth' },
+    { value: '5.0%', label: 'hallucination rate, after rescoring with four scorer bugs fixed' },
+    { value: '54 → 85%', label: 'trend-question accuracy after a routing fix, on a full re-run' },
+  ]}
+  prev={{ href: '/work/argus', title: 'Argus' }}
+  next={{ href: '/work/obscuron', title: 'Obscuron' }}
+>
+  <h2 id="problem"><span class="n">01</span>The problem</h2>
+  <p>India’s National Family Health Survey publishes district-level data for over 700 districts, as raw CSVs and hundred-page PDF reports per state. Asking “which districts have the worst child anaemia” means finding the right column and sorting every district by hand. A trend question means lining up a second survey too.</p>
+  <p>BharatHealth Analyst answers those questions in plain English, with tables, a chart, key facts and the survey’s caveats. The harder part was knowing <strong>whether the answers are right</strong>.</p>
+
+  <h2 id="system"><span class="n">02</span>The system</h2>
+  <Architecture
+    stages={stages}
+    legend={false}
+    fig="Fig. 1"
+    caption="From survey files to a graded answer. A sole-author project, so every box is mine."
+    source={{ href: sources.bharat.readme, label: 'repository README' }}
+  />
+  <p>Two decisions shaped it. The sandbox is my own restricted <code>exec()</code> rather than a library, because the agent writes pandas code and I needed to know exactly what it can touch. And the data pipeline is tracked with DVC: regenerating every output reproduces the files on disk byte for byte.</p>
+
+  <h2 id="benchmark"><span class="n">03</span>The benchmark</h2>
+  <p>200 questions across five categories (59 factual, 52 ranking and aggregation, 30 state comparison, 38 trend, 21 correlation), each with ground truth computed from the data, not written by hand. Five metrics: exact-answer accuracy, answer faithfulness, hallucination rate, reasoning-chain quality and latency.</p>
+  <p>Getting a clean run took three attempts. The first was discarded because the provider deprecated the model mid-run, so an unknown share of answers came from a model that no longer existed. The second hit a free-tier limit of 20 requests a day. The third rotated across several keys and completed all 200.</p>
+  <BarChart
+    rows={bharatCategories}
+    max={100}
+    fig="Fig. 2"
+    ariaLabel="Exact-answer accuracy by category: factual 100%, correlation 81.0%, ranking 66.7%, trend 54.4% before and 84.5% after the routing fix, state comparison 35.8%."
+    caption="Exact-answer accuracy by category. Overall: 71.1% exact answers, 82.0% faithfulness, 5.0% hallucination, 64.7% reasoning quality, 120 s per question."
+    source={bharatSource}
+    panel
+  />
+
+  <h2 id="scorer-bugs"><span class="n">04</span>Four bugs in my own scorer</h2>
+  <p>Checking the grader itself turned up four bugs that made the agent look worse than it was, independent of anything the model did:</p>
+  <ol>
+    <li><strong>A missing claim shape.</strong> The faithfulness checker had no handling for “State A: X%, State B: Y%”, so every comparison answer scored zero regardless of accuracy.</li>
+    <li><strong>False place names.</strong> The hallucination checker flagged words like “National” or “Best” before the word “district” as invented districts. None of them overlap the 698 real district names.</li>
+    <li><strong>No negative numbers.</strong> The numeric extractor ignored minus signs, so a correlation of −0.083 was read as +0.083.</li>
+    <li><strong>Rank overwrites.</strong> The ranking scorer moved a district every time it was mentioned again, so one answer listed the right districts in the right order and still scored zero.</li>
+  </ol>
+  <p>The whole run was rescored with every fix. That is where 71.1% and 5.0% come from, rather than the earlier, worse-looking figures.</p>
+
+  <h2 id="routing"><span class="n">05</span>A routing fix, measured</h2>
+  <p>Trend questions scored worst. It was not the model: the agent has a purpose-built trend tool, but the prompt only routed to it when a question said “trend” or “since NFHS-4”, and the benchmark’s trend questions never use that phrasing. After fixing the routing, a clean full re-run of all 38 trend questions moved exact-answer accuracy from 54.4% to 84.5%, and reasoning quality from 37.2% to 89.2%.</p>
+
+  <h2 id="what-didnt-hold"><span class="n">06</span>What is still open</h2>
+  <div class="callout">
+    <p class="callout__label">Limitations, as stated in the repository</p>
+    <ul>
+      <li>Only one of five categories has been re-run since the routing fix, so overall reasoning quality (64.7%) is a floor, not a final number.</li>
+      <li>The faithfulness checker still undercounts one markdown answer format.</li>
+      <li>The live backend runs on one laptop behind a tunnel, so Ask and Correlate are sometimes offline; Explore always works.</li>
+      <li>NFHS-4 trend data is state-level, so trends are disclosed as state-baseline comparisons, not district-to-district changes.</li>
+      <li>81 of the 200 questions came from an unseeded script, so the full set is tracked as data and cannot be regenerated byte for byte.</li>
+    </ul>
+  </div>
+
+  <h2 id="engineering"><span class="n">07</span>Engineering around a fragile backend</h2>
+  <ul>
+    <li><strong>65 tests, all passing</strong>, with measured coverage: 93% for the API, 74% for the tools, 63% overall.</li>
+    <li><strong>Built for an unreliable backend.</strong> Render, Hugging Face Spaces and Vercel were each tried for the API and each hit a platform limit, so the backend runs locally behind a Cloudflare Tunnel. A scheduled watchdog restarts it, rewrites the site’s API address when the tunnel URL changes, and redeploys.</li>
+    <li><strong>Imputed values are flagged, not hidden.</strong> 2,286 missing NFHS-5 cells were filled from NFHS-4, and every one carries an <code>_is_imputed</code> flag.</li>
+  </ul>
+</CaseStudy>

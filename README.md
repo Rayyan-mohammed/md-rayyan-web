@@ -1,65 +1,46 @@
-# MD Rayyan — Portfolio
+# MD Rayyan — portfolio
 
-Personal portfolio site for MD Rayyan, AI/ML Engineer & Full-Stack Developer.
+Personal site for MD Rayyan: ML systems and the evaluations that decide whether to trust them.
 
 **Live:** https://rayyan-mohammed.vercel.app/
 
 ## What this is
 
-A single-page React portfolio built from scratch, with the motion as the main feature: a WebGL particle object that morphs as you scroll, Lenis inertia scrolling wired into GSAP ScrollTrigger, and a pinned sideways project reel. Most copy lives in [src/data/content.js](src/data/content.js).
+A static site built with [Astro](https://astro.build). Every page ships real HTML; the only client JavaScript is the theme toggle, the copy-email button and the drain replay on the Argus page.
 
-## Page flow
-
-| Section | What happens |
+| Page | Content |
 |---|---|
-| Loader | Counter 000 to 100 driven by real work (fonts, three.js, first scene frame), then lifts like a curtain. Shown once per session. |
-| Hero | Dark rounded frame holding a three.js `Points` object (custom `ShaderMaterial`, additive blending, 7k to 14k points depending on device). Wordmark slides up out of overflow masks. The frame expands to full-bleed as you scroll out. |
-| Approach | Five pinned chapters. The particle object bursts and re-forms into brackets, cube, node graph, rings and a heart. Spin follows scroll, pointer adds parallax, headlines reveal line by line, and a fixed rail shows the active chapter. |
-| Statement | A large statement that fills word by word with scroll, plus count-up stats. |
-| About / Experience | Bio with a parallax photo, and a scroll-filled timeline. |
-| Work | Pinned, scrolls sideways on desktop with a progress bar. Cards invert to dark on hover. Stacks vertically on mobile. |
-| Skills | Velocity-reactive marquee and grouped skills. |
-| Awards / Contact | Awards and education, then a giant email and phone link, socials, availability note and live Hyderabad time. |
+| `/` | Hero with sourced proof points, four featured projects with figures, papers, principles, more work, about, leadership, contact |
+| `/research` | Papers with abstracts, my part in each, links and BibTeX |
+| `/work/argus` | Case study: Spot-resilient training on EKS, trace benchmark, 152 real reclaims |
+| `/work/bharathealth` | Case study: LLM agent over NFHS-5 and its 200-question benchmark |
+| `/work/obscuron` | Case study: calibrated novelty detection, IEEE ICAESIS-2026 |
 
-The header switches between light and dark depending on the section behind it.
+## Content rules
 
-## Notable implementation details
+- Every number links to the file in the project repository that produced it.
+- Every team project says it was a team project, and the featured ones name my part. Green (the accent colour) means "the part I built", nowhere else.
+- Limitations sit next to results.
 
-- **Smooth scroll** with Lenis, driven by `gsap.ticker` and synced via `lenis.on('scroll', ScrollTrigger.update)` ([src/lib/smooth.js](src/lib/smooth.js)). In-page links glide.
-- **Particle engine** in [src/lib/ParticleScene.js](src/lib/ParticleScene.js) with shape generators in [src/lib/shapes.js](src/lib/shapes.js). three.js is a lazy chunk, and the scene only renders while the hero and story are visible.
-- **Boot tracker** in [src/lib/boot.js](src/lib/boot.js) so the loader reflects real loading, and the intro plays when it finishes.
-- **Reduced motion** is respected end to end: no smooth scroll, no loader, static particles, a static hero, unpinned story chapters and project cards, no count-ups or split-title reveals. The WebGL scene also stops its render loop.
-- **SEO basics**: canonical URL, Open Graph/Twitter tags with image alt text, Person JSON-LD, `robots.txt` and `sitemap.xml`.
-- **Error boundary** around the page so a runtime failure cannot leave the reveal states stuck at opacity 0.
+Copy lives in `src/data/` (`site.ts`, `work.ts`, `research.ts`, `figures.ts`). Chart data in `figures.ts` is copied from each repository's results; update both together.
 
-## Stack
+## Commands
 
-- React 18 + Vite
-- GSAP (ScrollTrigger, SplitText), Lenis, three.js
-- Plain CSS with custom properties for design tokens
-- Deployed on Vercel
+| Command | What it does |
+|---|---|
+| `npm install` | Install dependencies |
+| `npm run dev` | Dev server at http://localhost:4321 |
+| `npm run build` | Static build into `dist/` |
+| `npm run preview` | Serve the build locally |
+| `npm run icons` | Regenerate favicons from the mark |
+| `npm run og` | Regenerate social images in `public/og/` (needs local Chrome; set `CHROME_PATH` if needed) |
 
-## Getting started
+## Deployment and headers
 
-```bash
-npm install
-npm run dev
-```
+Deployed on Vercel. `vercel.json` sets clean URLs, a `/cv` redirect, immutable caching for hashed assets and a strict Content-Security-Policy. The CSP allows exactly one inline script, the theme initialiser in `src/layouts/Base.astro`, by its SHA-256 hash. **If you edit that script, update the hash in `vercel.json`** (the quality workflow checks this).
 
-Build for production:
+## Design
 
-```bash
-npm run build
-npm run preview
-```
-
-## Project structure
-
-```
-src/
-├── components/     # One component + stylesheet per section
-├── data/
-│   └── content.js  # All site copy — edit here to update content
-├── App.jsx
-└── main.jsx
-```
+- Type: Geist and Geist Mono, self-hosted.
+- Colour: paper and ink, one emerald accent; light and dark themes follow the system, with a toggle.
+- Motion: CSS only, respects `prefers-reduced-motion`; cross-page view transitions on supporting browsers.
