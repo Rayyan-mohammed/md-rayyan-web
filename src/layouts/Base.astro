@@ -90,5 +90,29 @@ const structured = [person, ...jsonLd];
       <slot />
     </main>
     <Footer />
+    <script>
+      // Fade content in as it scrolls into view. Elements already on screen are shown
+      // immediately, and nothing is hidden at all without JavaScript or with reduced motion.
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) requestAnimationFrame(() => {
+        const items = [...document.querySelectorAll<HTMLElement>('.reveal')];
+        const fold = window.innerHeight * 0.95;
+        // Read every position first, then write classes, so layout is computed once.
+        const onScreen = items.map((el) => el.getBoundingClientRect().top < fold);
+        items.forEach((el, i) => onScreen[i] && el.classList.add('is-visible'));
+        document.documentElement.classList.add('reveal-ready');
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-visible');
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -6% 0px', threshold: 0.06 },
+        );
+        for (const el of items) if (!el.classList.contains('is-visible')) io.observe(el);
+      });
+    </script>
   </body>
 </html>

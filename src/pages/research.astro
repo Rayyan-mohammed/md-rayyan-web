@@ -5,7 +5,7 @@ import { papers } from '../data/research';
 import { site } from '../data/site';
 
 const scholarly = papers
-  .filter((p) => p.status !== 'Ongoing')
+  .filter((p) => p.status !== 'In progress')
   .map((p) => ({
     '@context': 'https://schema.org',
     '@type': 'ScholarlyArticle',

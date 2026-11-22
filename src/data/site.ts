@@ -70,8 +70,8 @@ export const sources = {
 };
 
 export const nav = [
-  { href: '/#work', label: 'Work' },
-  { href: '/research', label: 'Research' },
-  { href: '/#about', label: 'About' },
-  { href: '/#contact', label: 'Contact' },
+  { key: 'work', href: '/#work', label: 'Work' },
+  { key: 'research', href: '/research', label: 'Research' },
+  { key: 'about', href: '/#about', label: 'About' },
+  { key: 'contact', href: '/#contact', label: 'Contact' },
 ];

@@ -9,11 +9,11 @@ const { paper, full = false } = Astro.props;
 const chipClass = {
   Presented: 'chip--presented',
   Preprint: 'chip--preprint',
-  Ongoing: 'chip--ongoing',
+  'In progress': 'chip--ongoing',
 }[paper.status];
 const external = (href: string) => href.startsWith('http');
 ---
-<article class="paper" id={paper.id}>
+<article class="paper reveal" id={paper.id}>
   <div class="paper__status">
     <span class:list={['chip', chipClass]}>{paper.status}</span>
     <span>{paper.date}</span>

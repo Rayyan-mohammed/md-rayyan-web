@@ -22,11 +22,17 @@ import {
 
 const [argus, bharat, obscuron, caliber] = featured;
 
+const pubs = [
+  { status: 'Presented', chip: 'chip--presented', venue: 'IEEE ICAESIS-2026', title: 'Calibrated novelty detection for microbial dark matter', meta: 'Co-author · Obscuron · Oct 2026', href: '/research#obscuron' },
+  { status: 'Preprint', chip: 'chip--preprint', venue: 'arXiv:2609.39067', title: 'When predicting Spot interruptions beats simple checkpointing', meta: 'Co-author · Argus · Sep 2026', href: '/research#argus' },
+  { status: 'In progress', chip: 'chip--ongoing', venue: 'CALIBER', title: 'Conformal hallucination flags that survive scanner changes', meta: 'Theory track · 2026', href: '/research#caliber' },
+];
+
 const proof = [
-  { value: 'IEEE ICAESIS-2026', label: 'Co-author of a paper presented in October 2026', href: '/research#obscuron' },
-  { value: 'arXiv:2609.39067', label: 'Argus preprint on Spot-resilient ML training', href: links.arxiv },
-  { value: '152', label: 'real Spot reclaims measured by a sensor fleet I ran', href: '/work/argus#reclaims' },
-  { value: '200', label: 'question agent benchmark, rescored after four scorer bugs', href: '/work/bharathealth#benchmark' },
+  { kicker: 'Argus', value: '152', label: 'real Spot reclaims measured by a sensor fleet I ran', href: '/work/argus#reclaims' },
+  { kicker: 'Obscuron', value: '0.962', label: 'held-out-family AUROC across 903 protein families', href: '/work/obscuron#results' },
+  { kicker: 'BharatHealth', value: '200', label: 'question agent benchmark, rescored after four scorer bugs', href: '/work/bharathealth#benchmark' },
+  { kicker: 'Argus', value: '≈ 75 s', label: 'from a Spot warning to resumed training on real EKS', href: '/work/argus#drain' },
 ];
 
 const principles = [
@@ -71,24 +77,9 @@ const leadership = [
     date: '2025',
     desc: 'Ran 3+ industry workshops end to end, with 400+ Google Cloud certification sign-ups.',
   },
-  {
-    title: 'Social Media Manager, CyberOwls Club',
-    org: 'SVKM’s NMIMS Hyderabad',
-    date: '',
-    desc: '',
-  },
-  {
-    title: 'Volunteer, HackTrek 1.0',
-    org: '',
-    date: '',
-    desc: '',
-  },
-  {
-    title: 'Community service, Sannidhi Orphan Home',
-    org: '',
-    date: '',
-    desc: '',
-  },
+  { title: 'Social Media Manager, CyberOwls Club', org: 'SVKM’s NMIMS Hyderabad', date: '', desc: '' },
+  { title: 'Volunteer, HackTrek 1.0', org: '', date: '', desc: '' },
+  { title: 'Community service, Sannidhi Orphan Home', org: '', date: '', desc: '' },
 ];
 
 const awards = [
@@ -105,27 +96,42 @@ const tools = [
   { area: 'Evaluation and statistics', items: 'Conformal prediction, extreme-value calibration, membership-inference attacks, grouped cross-validation, bootstrap intervals', where: [['CALIBER', '/research#caliber'], ['Obscuron', '/work/obscuron'], ['Doppel', '#more-work']] },
   { area: 'Cloud and infrastructure', items: 'AWS (EKS, S3, Lambda, SQS, Elastic Beanstalk, RDS), Kubernetes (kopf, Helm), Docker', where: [['Argus', '/work/argus'], ['PharmaFlow', '#more-work']] },
   { area: 'MLOps', items: 'MLflow, DVC, GitHub Actions, Prometheus, Grafana', where: [['Argus', '/work/argus'], ['BharatHealth', '/work/bharathealth']] },
-  { area: 'Backend and web', items: 'FastAPI, Flask, Next.js, React, PHP, MySQL', where: [['BharatHealth', '/work/bharathealth'], ['PharmaFlow', '#more-work']] },
+  { area: 'Backend and web', items: 'FastAPI, Flask, Next.js, React, PHP, MySQL, Supabase', where: [['BharatHealth', '/work/bharathealth'], ['HackScore', '#more-work']] },
 ];
 
 const external = (href: string) => href.startsWith('http');
 ---
 <Base>
   <section class="hero" aria-labelledby="hero-title">
-    <div class="container">
-      <p class="eyebrow">{site.role}</p>
-      <h1 class="hero__title" id="hero-title">I build machine-learning systems, and the evaluations that decide whether to trust them.</h1>
-      <p class="hero__sub">
-        Final-year CSE (Data Science) at SVKM’s NMIMS Hyderabad. Co-author of a paper presented at IEEE ICAESIS-2026 and an arXiv preprint on Spot-resilient training. Every number here links to its source; team work is labelled as team work.
-      </p>
-      <div class="hero__cta">
-        <a class="btn btn--primary" href="/research">Read the research <span aria-hidden="true">→</span></a>
-        <a class="btn" href="#work">Selected work</a>
-        <a class="btn" href={site.cv} download="MD_Rayyan_CV.pdf">CV <span class="arrow" aria-hidden="true">PDF ↓</span></a>
+    <div class="container hero__grid">
+      <div class="hero__text">
+        <p class="eyebrow">{site.role}</p>
+        <h1 class="hero__title" id="hero-title">I build machine-learning systems, <span class="hero__em">and the evaluations that decide whether to trust them.</span></h1>
+        <p class="hero__sub">
+          Final-year CSE (Data Science) at SVKM’s NMIMS Hyderabad. Every number here links to its source, and team work is labelled as team work.
+        </p>
+        <div class="hero__cta">
+          <a class="btn btn--primary" href="#work">See the work <span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn" href="/research">Research</a>
+          <a class="btn" href={site.cv} download="MD_Rayyan_CV.pdf">CV <span class="arrow" aria-hidden="true">PDF ↓</span></a>
+        </div>
       </div>
-      <div class="proof" role="list">
+      <aside class="pubs" aria-labelledby="pubs-title">
+        <p class="pubs__head"><span id="pubs-title">Publications · 2026</span><a href="/research">All research</a></p>
+        {pubs.map((p) => (
+          <a class="pub" href={p.href}>
+            <span class="pub__top"><span class="pub__venue">{p.venue}</span><span class:list={['chip', p.chip]}>{p.status}</span></span>
+            <span class="pub__title">{p.title}</span>
+            <span class="pub__meta">{p.meta}</span>
+          </a>
+        ))}
+      </aside>
+    </div>
+    <div class="container">
+      <div class="proof" role="list" aria-label="Evidence">
         {proof.map((p) => (
           <a class="proof__item" href={p.href} role="listitem">
+            <span class="proof__kicker">{p.kicker}</span>
             <span class="proof__value">{p.value}</span>
             <span class="proof__label">{p.label}</span>
           </a>
@@ -190,9 +196,9 @@ const external = (href: string) => href.startsWith('http');
     </div>
   </section>
 
-  <section class="section" id="research" aria-labelledby="research-title">
+  <section class="section section--band" id="research" aria-labelledby="research-title">
     <div class="container">
-      <SectionHead index="02" label="Research" title="Papers" id="research-title">
+      <SectionHead index="02" label="Research" title="Papers and work in progress" id="research-title">
         Two papers in 2026, both co-authored with Angshuman Chakravertty, each with its code, decision log and limitations in public. The question I keep returning to: how big is the gap between a metric and the claim it is used to support?
       </SectionHead>
       <div class="papers">
@@ -207,8 +213,8 @@ const external = (href: string) => href.startsWith('http');
       <SectionHead index="03" label="How I work" title="Four habits, each with a receipt" id="principles-title" />
       <div class="principles">
         {principles.map((p, i) => (
-          <div class="principle">
-            <span class="principle__n">{String(i + 1).padStart(2, '0')}</span>
+          <div class="principle reveal">
+            <span class="principle__n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
             <h3>{p.title}</h3>
             <p>{p.body} <a href={p.href}>See it <span aria-hidden="true">→</span></a></p>
           </div>
@@ -217,28 +223,32 @@ const external = (href: string) => href.startsWith('http');
     </div>
   </section>
 
-  <section class="section" id="more-work" aria-labelledby="more-title">
+  <section class="section section--band" id="more-work" aria-labelledby="more-title">
     <div class="container">
-      <SectionHead index="04" label="More work" title="Smaller projects and team builds" id="more-title" />
-      <table class="archive">
-        <thead>
-          <tr><th scope="col">Year</th><th scope="col">Project</th><th scope="col">What it is</th><th scope="col"><span class="visually-hidden">Links</span></th></tr>
-        </thead>
-        <tbody>
-          {archive.map((item) => (
-            <tr>
-              <td>{item.year}</td>
-              <td class="archive__name">{item.name}{item.role && <span class="archive__role">{item.role}</span>}</td>
-              <td class="archive__desc">{item.desc}</td>
-              <td class="archive__links">
-                {item.links.map((l) => (
-                  <a href={l.href} aria-label={`${item.name}: ${l.label}`}>{l.label} <span class="arrow" aria-hidden="true">{external(l.href) ? '↗' : '→'}</span></a>
-                ))}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <SectionHead index="04" label="More work" title="Smaller projects and team builds" id="more-title">
+        Research tools, team builds and earlier projects. Each says whether it was a team effort.
+      </SectionHead>
+      <div class="archive-wrap reveal">
+        <table class="archive">
+          <thead>
+            <tr><th scope="col">Year</th><th scope="col">Project</th><th scope="col">What it is</th><th scope="col"><span class="visually-hidden">Links</span></th></tr>
+          </thead>
+          <tbody>
+            {archive.map((item) => (
+              <tr>
+                <td>{item.year}</td>
+                <td class="archive__name">{item.name}{item.role && <span class="archive__role">{item.role}</span>}</td>
+                <td class="archive__desc">{item.desc}</td>
+                <td class="archive__links">
+                  {item.links.map((l) => (
+                    <a href={l.href} aria-label={`${item.name}: ${l.label}`}>{l.label} <span class="arrow" aria-hidden="true">{external(l.href) ? '↗' : '→'}</span></a>
+                  ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
@@ -246,13 +256,13 @@ const external = (href: string) => href.startsWith('http');
     <div class="container">
       <SectionHead index="05" label="About" title="About me" id="about-title" />
       <div class="about">
-        <div class="about__text">
+        <div class="about__text reveal">
           <p>I work on the part of machine learning that starts after the notebook: the system a model runs inside, and the evidence that it does what it claims.</p>
           <p>On <a href="/work/argus">Argus</a>, I owned the ML layer of a Kubernetes operator that keeps training jobs alive through EC2 Spot reclaims. I then ran a sensor campaign that caught 152 real reclaims, and it showed our price-based predictor had no skill on them. On <a href="/work/obscuron">Obscuron</a>, I built the implementation track for calibrated novelty detection across 1.34 million proteins. On <a href="/work/bharathealth">BharatHealth Analyst</a>, I wrote both the agent and the 200-question benchmark that grades it, and rescored everything when I found four bugs in my own scorer.</p>
           <p>The habits behind all three: freeze the evaluation before results arrive, check for leakage before quoting a number, and publish the limitation next to the result.</p>
           <p>Outside research I lead the Code IT Club on campus, where we ran the university’s internal round of Smart India Hackathon 2026.</p>
           <div class="now">
-            <p class="now__head"><b>Now</b> <span>Updated November 2026</span></p>
+            <p class="now__head"><b>Now</b> <span>November 2026</span></p>
             <ul>
               <li><b>Real labels for infrastructure ML.</b> Replacing proxy labels with measured ones: Argus’s sensor fleet produced 152 real reclaims, and a capacity-based risk model now serves alongside the price model.</li>
               <li><b>Failure analysis for vision models.</b> Co-developing <a href={sources.veo}>Vision Error Observatory</a>, which locates where monocular depth models fail and tests the explanations by editing images and re-running the model.</li>
@@ -260,7 +270,7 @@ const external = (href: string) => href.startsWith('http');
             </ul>
           </div>
         </div>
-        <div class="about__side">
+        <div class="about__side reveal">
           <div class="portrait">
             <Picture src={portrait} alt="MD Rayyan" widths={[320, 480, 720]} sizes="(max-width: 520px) 260px, (max-width: 900px) 220px, 400px" formats={['avif', 'webp']} />
           </div>
@@ -272,7 +282,7 @@ const external = (href: string) => href.startsWith('http');
           </dl>
         </div>
       </div>
-      <div class="tools">
+      <div class="tools reveal">
         <h3 class="subhead">Tools, listed only where a project shows them doing real work</h3>
         <table class="tools__table">
           <thead>
@@ -293,11 +303,11 @@ const external = (href: string) => href.startsWith('http');
     </div>
   </section>
 
-  <section class="section" id="leadership" aria-labelledby="leadership-title">
+  <section class="section section--band" id="leadership" aria-labelledby="leadership-title">
     <div class="container">
       <SectionHead index="06" label="Leadership & recognition" title="Outside the lab" id="leadership-title" />
       <div class="two-col">
-        <div>
+        <div class="panel reveal">
           <h3 class="subhead">Leadership & community</h3>
           <ul class="entry-list">
             {leadership.map((item) => (
@@ -309,7 +319,7 @@ const external = (href: string) => href.startsWith('http');
             ))}
           </ul>
         </div>
-        <div>
+        <div class="panel reveal">
           <h3 class="subhead">Recognition</h3>
           <ul class="entry-list">
             {awards.map((item) => (
@@ -327,7 +337,7 @@ const external = (href: string) => href.startsWith('http');
 
   <section class="section" id="contact" aria-labelledby="contact-title">
     <div class="container">
-      <div class="contact">
+      <div class="contact-card reveal">
         <p class="ruler"><b>07</b> Contact</p>
         <h2 class="contact__title" id="contact-title">Get in touch</h2>
         <p class="section-lead">I’m looking for ML-systems and research-engineering roles, research collaborations on evaluation and reliability, and conversations with groups I’d like to join for graduate study. Email is the fastest way to reach me.</p>

@@ -69,10 +69,39 @@ const article = {
     <aside class="toc" aria-label="On this page">
       <p class="toc__title">On this page</p>
       <ol>
-        {toc.map((t) => <li><a href={`#${t.id}`}>{t.label}</a></li>)}
+        {toc.map((t) => <li><a href={`#${t.id}`} data-toc={t.id}>{t.label}</a></li>)}
       </ol>
     </aside>
   </div>
+  <script>
+    // Highlight the section being read in the "On this page" list.
+    const tocLinks = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc]')];
+    const heads = tocLinks
+      .map((a) => document.getElementById(a.dataset.toc ?? ''))
+      .filter((h): h is HTMLElement => Boolean(h));
+    let pending = false;
+    const mark = () => {
+      pending = false;
+      const line = window.innerHeight * 0.3;
+      let active = heads[0]?.id;
+      for (const h of heads) if (h.getBoundingClientRect().top <= line) active = h.id;
+      for (const a of tocLinks) {
+        if (a.dataset.toc === active) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      }
+    };
+    addEventListener(
+      'scroll',
+      () => {
+        if (!pending) {
+          pending = true;
+          requestAnimationFrame(mark);
+        }
+      },
+      { passive: true },
+    );
+    requestAnimationFrame(mark);
+  </script>
   <div class="container">
     <nav class="cs-next" aria-label="More case studies">
       {prev ? <a href={prev.href}><span>← Previous</span><b>{prev.title}</b></a> : <a href="/#work"><span>← Back</span><b>All work</b></a>}

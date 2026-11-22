@@ -3,7 +3,7 @@ import type { Link } from './work';
 
 export type Paper = {
   id: string;
-  status: 'Presented' | 'Preprint' | 'Ongoing';
+  status: 'Presented' | 'Preprint' | 'In progress';
   date: string;
   title: string;
   authors: { name: string; me?: boolean }[];
@@ -71,7 +71,7 @@ export const papers: Paper[] = [
   },
   {
     id: 'caliber',
-    status: 'Ongoing',
+    status: 'In progress',
     date: '2026',
     title: 'CALIBER: operator-shift-robust conformal hallucination flagging for image reconstruction',
     authors: [{ name: 'Three-track team' }],

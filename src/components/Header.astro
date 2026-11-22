@@ -6,9 +6,10 @@ interface Props {
   path: string;
 }
 const { path } = Astro.props;
-const isCurrent = (href: string) => !href.includes('#') && (path === href || path.startsWith(href + '/'));
+// Server-side active state for whole pages; the homepage is tracked while scrolling (script below).
+const pageKey = path.startsWith('/work') ? 'work' : path === '/research' ? 'research' : null;
 ---
-<header class="site-header">
+<header class="site-header" data-site-header>
   <div class="container site-header__inner">
     <a class="wordmark" href="/" aria-label={`${site.name}, home`}>
       <Mark class="wordmark__mark" />
@@ -16,7 +17,7 @@ const isCurrent = (href: string) => !href.includes('#') && (path === href || pat
     </a>
     <nav class="site-nav" aria-label="Main">
       {nav.map((item) => (
-        <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
+        <a href={item.href} data-nav={item.key} aria-current={pageKey === item.key ? 'page' : undefined}>{item.label}</a>
       ))}
     </nav>
     <div class="header-actions">
@@ -30,6 +31,7 @@ const isCurrent = (href: string) => !href.includes('#') && (path === href || pat
 </header>
 
 <script>
+  // Theme toggle
   const root = document.documentElement;
   const current = () =>
     root.dataset.theme ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -46,4 +48,47 @@ const isCurrent = (href: string) => !href.includes('#') && (path === href || pat
       label();
     });
   }
+
+  // Header border once scrolled, and homepage scroll tracking for the nav.
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.site-nav a[data-nav]')];
+  const owner: Record<string, string> = {
+    work: 'work',
+    research: 'research',
+    principles: 'work',
+    'more-work': 'work',
+    about: 'about',
+    leadership: 'about',
+    contact: 'contact',
+  };
+  const sections = [...document.querySelectorAll<HTMLElement>('main section[id]')].filter((s) => s.id in owner);
+  let queued = false;
+
+  const update = () => {
+    queued = false;
+    // Reads first (positions), then writes (classes), to avoid forced reflows.
+    const y = window.scrollY;
+    const line = window.innerHeight * 0.35;
+    let active: string | null = null;
+    for (const s of sections) if (s.getBoundingClientRect().top <= line) active = owner[s.id];
+    if (sections.length && window.innerHeight + y >= document.documentElement.scrollHeight - 4) active = 'contact';
+    header?.classList.toggle('is-scrolled', y > 8);
+    if (!sections.length) return;
+    for (const a of links) {
+      if (a.dataset.nav === active) a.setAttribute('aria-current', 'location');
+      else if (a.getAttribute('aria-current') === 'location') a.removeAttribute('aria-current');
+    }
+  };
+  addEventListener(
+    'scroll',
+    () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(update);
+      }
+    },
+    { passive: true },
+  );
+  addEventListener('resize', update, { passive: true });
+  requestAnimationFrame(update);
 </script>

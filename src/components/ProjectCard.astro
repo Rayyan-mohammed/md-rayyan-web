@@ -9,7 +9,7 @@ const { project, feature = false } = Astro.props;
 const titleHref = project.caseStudy ?? project.links[0]?.href;
 const external = (href: string) => href.startsWith('http');
 ---
-<article class:list={['card', { 'card--feature': feature }]} aria-labelledby={`card-${project.slug}`}>
+<article class:list={['card', 'reveal', { 'card--feature': feature }]} aria-labelledby={`card-${project.slug}`}>
   <div class="card__text">
     <div class="card__meta">
       <span class="chip chip--mine">{project.role}</span>

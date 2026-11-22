@@ -85,14 +85,14 @@ html,body{width:1200px;height:630px;background:#f7f6f2;color:#15171a;font-family
 .top svg{width:36px;height:36px}
 .top .name{color:#15171a;font-family:G;font-weight:600;font-size:26px;letter-spacing:-.01em}
 .eyebrow{margin-top:56px;display:flex;align-items:center;gap:12px;font:500 22px M,monospace;color:#4a4f57}
-.eyebrow:before{content:'';width:12px;height:12px;border-radius:50%;background:#0a7a5a;box-shadow:0 0 0 6px rgba(10,122,90,.12)}
+.eyebrow:before{content:'';width:12px;height:12px;border-radius:50%;background:#08714f;box-shadow:0 0 0 6px rgba(8,113,79,.12)}
 h1{margin-top:22px;font-size:58px;line-height:1.06;letter-spacing:-.032em;font-weight:600;max-width:1020px}
 .ruler{margin-top:auto;height:12px;background:linear-gradient(#bdb9ae,#bdb9ae) bottom/100% 1px no-repeat,repeating-linear-gradient(90deg,#bdb9ae 0 1px,transparent 1px 24px) bottom/100% 7px no-repeat}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:22px}
 .stat{padding-right:24px}
 .stat+.stat{padding-left:24px;border-left:1px solid #d9d6cd}
 .stat b{display:block;font:500 30px M,monospace;letter-spacing:-.02em}
-.stat:first-child b{color:#0a7a5a}
+.stat:first-child b{color:#08714f}
 .stat span{display:block;margin-top:6px;font-size:21px;color:#4a4f57}
 </style></head><body><div class="wrap">
 <div class="top"><svg viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="6" fill="#15171a"/><path d="M6 18 18 6" stroke="#f7f6f2" stroke-width="1.4" stroke-dasharray="1.6 1.9" fill="none"/><path d="M6 18h3v-3.5h3V11h3V7.5h3" stroke="#3dd68c" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="name">MD Rayyan</span><span>· rayyan-mohammed.vercel.app</span></div>

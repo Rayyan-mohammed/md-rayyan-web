@@ -117,6 +117,26 @@ export type ArchiveItem = {
 export const archive: ArchiveItem[] = [
   {
     year: '2026',
+    name: 'Vision Error Observatory',
+    role: 'Co-developer, team of three',
+    desc: 'Audits monocular depth models: finds where predictions fail, names a likely cause or abstains, and tests each explanation by editing the image and re-running the model. Boundary labels hold up across datasets (AUROC 0.85 on NYU, 0.81 on Hypersim); a pre-registered human study found the labels do not yet match human judgement, and says so.',
+    links: [
+      { label: 'Code', href: 'https://github.com/Md-Zeeshan-Ali/vision-error-observatory' },
+      { label: 'Explorer', href: 'https://vision-error-observatory.netlify.app/' },
+    ],
+  },
+  {
+    year: '2026',
+    name: 'ROOTCAUSE',
+    role: 'Sole author',
+    desc: 'An environmental advisory assistant that checks every cause-and-effect step of its own advice against a citation-backed causal map before showing it. Over 30 scenarios the checker accepted 23 of its recommendations, against 5 for a plain LLM and 11 for standard RAG; the evaluation is small and self-scored.',
+    links: [
+      { label: 'Code', href: 'https://github.com/Rayyan-mohammed/eco-causal' },
+      { label: 'Demo', href: 'https://eco-causal.onrender.com/' },
+    ],
+  },
+  {
+    year: '2026',
     name: 'Land-Lekha',
     role: 'Smart India Hackathon 2026, team of six',
     desc: 'Scanned Hindi and English land records to validated fields, with calibrated per-field confidence (expected calibration error 0.0245 on 516 held-out fields) and human-review routing.',
@@ -141,6 +161,20 @@ export const archive: ArchiveItem[] = [
       { label: 'Code', href: 'https://github.com/Rayyan-mohammed/HinglishRAG-Faith' },
       { label: 'Demo', href: 'https://d1zhxd8az51i27.cloudfront.net' },
     ],
+  },
+  {
+    year: '2026',
+    name: 'LedgerLoop',
+    role: 'Team of two',
+    desc: 'A B2B receivables follow-up desk built on synthetic data for the Fynd × NMIMS Hyderabad engineering case: dispute handling, payment promises, risk scoring and drafted follow-ups.',
+    links: [{ label: 'Code', href: 'https://github.com/Rayyan-mohammed/LedgerLoop' }],
+  },
+  {
+    year: '2026',
+    name: 'HackScore',
+    role: 'Team of four',
+    desc: 'Hackathon judging platform on Next.js and Supabase: rubric builder, judge scorecards with row-level security, live leaderboards and generated evaluation reports.',
+    links: [{ label: 'Code', href: 'https://github.com/Rayyan-mohammed/Hack-Score' }],
   },
   {
     year: '2026',

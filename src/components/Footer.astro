@@ -1,18 +1,12 @@
 ---
+import Mark from './Mark.astro';
 import { links, site } from '../data/site';
-
-const updated = new Date(site.lastUpdated + 'T00:00:00Z').toLocaleDateString('en-GB', {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  timeZone: 'UTC',
-});
 ---
 <footer class="site-footer">
   <div class="container">
     <div class="site-footer__grid">
-      <div>
-        <h2>MD Rayyan</h2>
+      <div class="site-footer__brand">
+        <a class="wordmark" href="/"><Mark class="wordmark__mark" /><span>MD Rayyan</span></a>
         <p>ML systems and the evaluations that decide whether to trust them. Final-year B.Tech CSE (Data Science), SVKM's NMIMS Hyderabad, graduating June 2027.</p>
         <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
       </div>
@@ -39,7 +33,7 @@ const updated = new Date(site.lastUpdated + 'T00:00:00Z').toLocaleDateString('en
     </div>
     <div class="site-footer__base">
       <span>© {new Date().getFullYear()} MD Rayyan</span>
-      <span>Last updated <time datetime={site.lastUpdated}>{updated}</time> · <a href={links.source}>Source</a></span>
+      <span><a href={links.source}>Source on GitHub</a></span>
     </div>
   </div>
 </footer>
