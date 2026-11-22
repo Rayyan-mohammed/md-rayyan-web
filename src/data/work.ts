@@ -120,10 +120,7 @@ export const archive: ArchiveItem[] = [
     name: 'Land-Lekha',
     role: 'Smart India Hackathon 2026, team of six',
     desc: 'Scanned Hindi and English land records to validated fields, with calibrated per-field confidence (expected calibration error 0.0245 on 516 held-out fields) and human-review routing.',
-    links: [
-      { label: 'Code', href: 'https://github.com/Rayyan-mohammed/Land-Lekha' },
-      { label: 'Live', href: 'https://landlekha.in' },
-    ],
+    links: [{ label: 'Code', href: 'https://github.com/Rayyan-mohammed/Land-Lekha' }],
   },
   {
     year: '2026',
@@ -155,10 +152,7 @@ export const archive: ArchiveItem[] = [
     year: '2026',
     name: 'OptiPrice',
     desc: 'Constrained price optimisation with Monte Carlo A/B simulation and SHAP-explained recommendations.',
-    links: [
-      { label: 'Code', href: 'https://github.com/Rayyan-mohammed/OptiPrice' },
-      { label: 'App', href: 'https://optiprice-dynamic-pricing-agent.streamlit.app/' },
-    ],
+    links: [{ label: 'Code', href: 'https://github.com/Rayyan-mohammed/OptiPrice' }],
   },
   {
     year: '2026',
