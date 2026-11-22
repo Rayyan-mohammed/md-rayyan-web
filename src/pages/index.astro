@@ -98,6 +98,16 @@ const awards = [
   { title: 'Finalist, Joy of Programming', date: '2024', desc: 'Top 6 of 40+ in competitive programming.' },
 ];
 
+const tools = [
+  { area: 'Machine learning', items: 'PyTorch, XGBoost, scikit-learn, TensorFlow / Keras, SHAP', where: [['Argus', '/work/argus'], ['Obscuron', '/work/obscuron'], ['Doppel', '#more-work']] },
+  { area: 'Foundation models', items: 'Hugging Face Transformers, ESM-2, ProstT5, wav2vec2, sentence-transformers', where: [['Obscuron', '/work/obscuron'], ['BharatHealth', '/work/bharathealth']] },
+  { area: 'LLMs and agents', items: 'LangGraph, ChromaDB, FAISS, claim-level RAG verification', where: [['BharatHealth', '/work/bharathealth'], ['CodeSwitch-Verify', '#more-work']] },
+  { area: 'Evaluation and statistics', items: 'Conformal prediction, extreme-value calibration, membership-inference attacks, grouped cross-validation, bootstrap intervals', where: [['CALIBER', '/research#caliber'], ['Obscuron', '/work/obscuron'], ['Doppel', '#more-work']] },
+  { area: 'Cloud and infrastructure', items: 'AWS (EKS, S3, Lambda, SQS, Elastic Beanstalk, RDS), Kubernetes (kopf, Helm), Docker', where: [['Argus', '/work/argus'], ['PharmaFlow', '#more-work']] },
+  { area: 'MLOps', items: 'MLflow, DVC, GitHub Actions, Prometheus, Grafana', where: [['Argus', '/work/argus'], ['BharatHealth', '/work/bharathealth']] },
+  { area: 'Backend and web', items: 'FastAPI, Flask, Next.js, React, PHP, MySQL', where: [['BharatHealth', '/work/bharathealth'], ['PharmaFlow', '#more-work']] },
+];
+
 const external = (href: string) => href.startsWith('http');
 ---
 <Base>
@@ -261,6 +271,24 @@ const external = (href: string) => href.startsWith('http');
             <div><dt>Open to</dt><dd>ML-systems and research-engineering roles, research collaborations, graduate study</dd></div>
           </dl>
         </div>
+      </div>
+      <div class="tools">
+        <h3 class="subhead">Tools, listed only where a project shows them doing real work</h3>
+        <table class="tools__table">
+          <thead>
+            <tr><th scope="col">Area</th><th scope="col">Tools</th><th scope="col">Where</th></tr>
+          </thead>
+          <tbody>
+            {tools.map((t) => (
+              <tr>
+                <th scope="row">{t.area}</th>
+                <td>{t.items}</td>
+                <td class="tools__where">{t.where.map(([label, href], i) => <>{i > 0 && ', '}<a href={href}>{label}</a></>)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p class="note">Languages: Python (primary), SQL, JavaScript and TypeScript, C++.</p>
       </div>
     </div>
   </section>

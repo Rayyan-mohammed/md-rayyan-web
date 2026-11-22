@@ -1153,6 +1153,68 @@ main {
   }
 }
 
+.tools {
+  margin-top: var(--space-8);
+}
+.tools__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--step-0);
+  border-top: 1px solid var(--rule-strong);
+}
+.tools__table thead th {
+  text-align: left;
+  font: 500 0.75rem / 1.4 var(--font-mono);
+  color: var(--ink-3);
+  padding: var(--space-3) var(--space-4) var(--space-3) 0;
+  border-bottom: 1px solid var(--rule-strong);
+}
+.tools__table tbody th {
+  text-align: left;
+  font-weight: 600;
+  vertical-align: top;
+  white-space: nowrap;
+  padding: var(--space-3) var(--space-5) var(--space-3) 0;
+  border-bottom: 1px solid var(--rule);
+}
+.tools__table td {
+  vertical-align: top;
+  color: var(--ink-2);
+  padding: var(--space-3) var(--space-4) var(--space-3) 0;
+  border-bottom: 1px solid var(--rule);
+}
+.tools__where {
+  white-space: nowrap;
+}
+@media (max-width: 760px) {
+  .tools__table thead {
+    display: none;
+  }
+  .tools__table,
+  .tools__table tbody,
+  .tools__table tr,
+  .tools__table th,
+  .tools__table td {
+    display: block;
+  }
+  .tools__table tr {
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--rule);
+  }
+  .tools__table tbody th,
+  .tools__table td {
+    border: 0;
+    padding: 0;
+    white-space: normal;
+  }
+  .tools__table td {
+    margin-top: 2px;
+  }
+  .tools__where {
+    font-size: 0.875rem;
+  }
+}
+
 /* ------------------------------------------------------------------
    Lists: leadership, awards
    ------------------------------------------------------------------ */

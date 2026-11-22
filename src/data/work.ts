@@ -94,7 +94,7 @@ export const featured: Featured[] = [
       'Conformal reliability flags for generative MRI and CT reconstruction assume the scanner’s acquisition operator never changes.',
     result:
       'Under operator shift on CT, naively transferred coverage falls to 0.69 against a 0.90 target; group-conditional calibration restores 0.90 or better.',
-    resultSource: sources.caliber.repo,
+    resultSource: sources.caliber.pinned,
     limit: {
       label: 'Still open',
       text: 'The coverage-gap bound is still being tested against measured score banks; preprint not yet posted.',

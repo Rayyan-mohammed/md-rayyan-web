@@ -49,4 +49,4 @@ export const caliberCoverage: BarRow[] = [
   { label: 'Naive transfer', note: 'calibrated on one operator', value: 0.69, display: '0.69', tone: 'caution' },
   { label: 'Group-conditional', note: 'calibrated per operator group', value: 0.9, display: '≥ 0.90' },
 ];
-export const caliberSource = { href: sources.caliber.repo, label: 'CALIBER repository' };
+export const caliberSource = { href: sources.caliber.pinned, label: 'CALIBER repository' };
