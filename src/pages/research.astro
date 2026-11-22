@@ -30,8 +30,9 @@ const scholarly = papers
       <p class="cs-sub">Two papers in 2026 and one in progress, all on the same question: how big is the gap between a metric and the claim it is used to support?</p>
     </div>
   </header>
-  <section class="section">
+  <section class="section" aria-labelledby="papers-title">
     <div class="container">
+      <h2 class="visually-hidden" id="papers-title">Papers</h2>
       <div class="papers">
         {papers.map((paper) => <PaperEntry paper={paper} full />)}
       </div>

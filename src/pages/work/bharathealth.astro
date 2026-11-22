@@ -59,6 +59,15 @@ const stages: ArchStage[] = [
   ]}
   prev={{ href: '/work/argus', title: 'Argus' }}
   next={{ href: '/work/obscuron', title: 'Obscuron' }}
+  toc={[
+    { id: 'problem', label: 'The problem' },
+    { id: 'system', label: 'The system' },
+    { id: 'benchmark', label: 'The benchmark' },
+    { id: 'scorer-bugs', label: 'Four scorer bugs' },
+    { id: 'routing', label: 'A routing fix' },
+    { id: 'what-didnt-hold', label: 'What is still open' },
+    { id: 'engineering', label: 'Engineering' },
+  ]}
 >
   <h2 id="problem"><span class="n">01</span>The problem</h2>
   <p>India’s National Family Health Survey publishes district-level data for over 700 districts, as raw CSVs and hundred-page PDF reports per state. Asking “which districts have the worst child anaemia” means finding the right column and sorting every district by hand. A trend question means lining up a second survey too.</p>

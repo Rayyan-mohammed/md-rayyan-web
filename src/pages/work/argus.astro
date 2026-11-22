@@ -80,6 +80,18 @@ const trace = [
   ]}
   prev={{ href: '/work/obscuron', title: 'Obscuron' }}
   next={{ href: '/work/bharathealth', title: 'BharatHealth Analyst' }}
+  toc={[
+    { id: 'question', label: 'The question' },
+    { id: 'system', label: 'The system' },
+    { id: 'drain', label: 'A real drain on EKS' },
+    { id: 'benchmark', label: 'When does prediction pay?' },
+    { id: 'model', label: 'The model' },
+    { id: 'reclaims', label: 'Real reclaims' },
+    { id: 'what-didnt-hold', label: 'What didn’t hold' },
+    { id: 'decisions', label: 'Engineering decisions' },
+    { id: 'my-part', label: 'My part' },
+    { id: 'paper', label: 'Paper' },
+  ]}
 >
   <h2 id="question"><span class="n">01</span>The question</h2>
   <p>EC2 Spot capacity costs 60–90% less than on-demand, but AWS can reclaim it with two minutes’ notice. A long training run that ignores this loses everything since its last checkpoint, every time.</p>
@@ -106,7 +118,7 @@ const trace = [
   <h2 id="benchmark"><span class="n">04</span>When does prediction pay?</h2>
   <p>Our first benchmark (80 trials: 4 policies, 4 interruption rates, 5 repetitions) showed that reacting to the notice degrades toward no protection once reclaims come faster than about one every two minutes. But it fed the predictive policy a configured lead time, so it could not test prediction itself. Reviewers said so, and they were right.</p>
   <p>The v2 benchmark replays real eu-north-1 Spot price history, with the model’s own causal risk scores driving the policy, on a synchronous 15-node job. The alarm budget is chosen on a separate calibration slice.</p>
-  <div class="table-wrap wide">
+  <div class="table-wrap">
     <table class="data-table">
       <caption>Slowdown against ideal (1.0 = no loss) at 15 nodes, by checkpoint cost. Price-spike interruptions, 4–13 October slice. <a class="source" href={sources.argus.trace}>trace_benchmark_result.md ↗</a></caption>
       <thead>

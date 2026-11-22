@@ -13,9 +13,10 @@ interface Props {
   stats: { value: string; label: string }[];
   next: { href: string; title: string };
   prev?: { href: string; title: string };
+  toc: { id: string; label: string }[];
 }
 
-const { slug, title, subtitle, description, meta, links, stats, next, prev } = Astro.props;
+const { slug, title, subtitle, description, meta, links, stats, next, prev, toc } = Astro.props;
 const external = (href: string) => href.startsWith('http');
 const article = {
   '@context': 'https://schema.org',
@@ -56,7 +57,7 @@ const article = {
       </p>
     </div>
   </header>
-  <div class="container reading">
+  <div class="container cs-body">
     <article class="prose">
       <div class="pull-stat">
         {stats.map((s) => (
@@ -65,6 +66,12 @@ const article = {
       </div>
       <slot />
     </article>
+    <aside class="toc" aria-label="On this page">
+      <p class="toc__title">On this page</p>
+      <ol>
+        {toc.map((t) => <li><a href={`#${t.id}`}>{t.label}</a></li>)}
+      </ol>
+    </aside>
   </div>
   <div class="container">
     <nav class="cs-next" aria-label="More case studies">

@@ -1350,7 +1350,53 @@ main {
 .cs-head .link-row {
   margin-top: var(--space-5);
 }
+.cs-body {
+  display: grid;
+  grid-template-columns: minmax(0, var(--read)) minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: start;
+}
+.toc {
+  position: sticky;
+  top: 96px;
+  margin-top: var(--space-8);
+  justify-self: end;
+  width: min(100%, 15rem);
+  font-size: 0.875rem;
+}
+.toc__title {
+  font: 500 0.75rem / 1.4 var(--font-mono);
+  color: var(--ink-3);
+  margin-bottom: var(--space-3);
+}
+.toc ol {
+  list-style: none;
+  padding: 0;
+  border-left: 1px solid var(--rule);
+  display: grid;
+}
+.toc a {
+  display: block;
+  padding: 6px 0 6px var(--space-4);
+  margin-left: -1px;
+  border-left: 1px solid transparent;
+  color: var(--ink-2);
+  text-decoration: none;
+}
+.toc a:hover {
+  color: var(--ink);
+  border-left-color: var(--accent);
+}
+@media (max-width: 1100px) {
+  .cs-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .toc {
+    display: none;
+  }
+}
 .prose {
+  max-width: var(--read);
   padding-block: var(--space-8) var(--space-9);
 }
 .prose > * + * {
@@ -1391,14 +1437,6 @@ main {
 }
 .prose .figure {
   margin-block: var(--space-7);
-}
-.prose .wide {
-  margin-inline: calc(-1 * min(140px, (100vw - var(--read) - 2 * var(--gutter)) / 2));
-}
-@media (max-width: 1000px) {
-  .prose .wide {
-    margin-inline: 0;
-  }
 }
 .callout {
   padding: var(--space-5);
