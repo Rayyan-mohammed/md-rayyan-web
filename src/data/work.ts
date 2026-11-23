@@ -138,8 +138,8 @@ export const archive: ArchiveItem[] = [
   {
     year: '2026',
     name: 'Land-Lekha',
-    role: 'Smart India Hackathon 2026, team of six',
-    desc: 'Scanned Hindi and English land records to validated fields, with calibrated per-field confidence (expected calibration error 0.0245 on 516 held-out fields) and human-review routing.',
+    role: 'Smart India Hackathon 2026, team of six; OCR pipeline, confidence model and backend',
+    desc: 'Scanned Hindi and English land records to validated fields: 88.1% field accuracy, and calibrated per-field confidence (expected calibration error 0.0245 on 516 held-out fields) that sends only 15.3% of fields to human review.',
     links: [{ label: 'Code', href: 'https://github.com/Rayyan-mohammed/Land-Lekha' }],
   },
   {
@@ -155,8 +155,8 @@ export const archive: ArchiveItem[] = [
   {
     year: '2026',
     name: 'CodeSwitch-Verify',
-    role: 'Team of two',
-    desc: 'RAG for Hinglish government-scheme questions that checks every claim in an answer against retrieved evidence before it reaches the user.',
+    role: 'Team of two; lead developer',
+    desc: 'RAG for Hinglish government-scheme questions that checks every claim in an answer against retrieved evidence before it reaches the user. Recall on hallucinated claims rose from 0.50 to 0.71 against human-reviewed labels.',
     links: [
       { label: 'Code', href: 'https://github.com/Rayyan-mohammed/HinglishRAG-Faith' },
       { label: 'Demo', href: 'https://d1zhxd8az51i27.cloudfront.net' },
