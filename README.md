@@ -37,7 +37,7 @@ Copy lives in `src/data/` (`site.ts`, `work.ts`, `research.ts`, `figures.ts`). C
 
 ## Deployment and headers
 
-Deployed on Vercel. `vercel.json` sets clean URLs, a `/cv` redirect, immutable caching for hashed assets and a strict Content-Security-Policy. The CSP allows exactly one inline script, the theme initialiser in `src/layouts/Base.astro`, by its SHA-256 hash. **If you edit that script, update the hash in `vercel.json`** (the quality workflow checks this).
+Deployed on Vercel. `vercel.json` sets clean URLs, a `/cv` redirect to `/MD_Rayyan_Resume.pdf`, immutable caching for hashed assets and a strict Content-Security-Policy. The CSP allows exactly one inline script, the theme initialiser in `src/layouts/Base.astro`, by its SHA-256 hash. **If you edit that script, update the hash in `vercel.json`** (the quality workflow checks this).
 
 ## Design
 

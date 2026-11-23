@@ -9,7 +9,7 @@ export const site = {
     'MD Rayyan builds machine-learning systems and the evaluations that decide whether to trust them. Co-author of Argus (arXiv) and Obscuron (IEEE ICAESIS-2026).',
   email: 'rayyan1652@gmail.com',
   location: 'Hyderabad, India',
-  cv: '/resume.pdf',
+  cv: '/MD_Rayyan_Resume.pdf',
   lastUpdated: '2026-11-23',
 };
 

@@ -6,8 +6,9 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/cv", "destination": "/resume.pdf", "permanent": false },
-    { "source": "/resume", "destination": "/resume.pdf", "permanent": false }
+    { "source": "/cv", "destination": "/MD_Rayyan_Resume.pdf", "permanent": false },
+    { "source": "/resume", "destination": "/MD_Rayyan_Resume.pdf", "permanent": false },
+    { "source": "/resume.pdf", "destination": "/MD_Rayyan_Resume.pdf", "permanent": false }
   ],
   "headers": [
     {
@@ -23,7 +24,7 @@
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
     },
     {
-      "source": "/((?!resume\\.pdf).*)",
+      "source": "/((?!MD_Rayyan_Resume\\.pdf).*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
@@ -37,8 +38,9 @@
       ]
     },
     {
-      "source": "/resume.pdf",
+      "source": "/MD_Rayyan_Resume.pdf",
       "headers": [
+        { "key": "Content-Disposition", "value": "attachment; filename=\"MD_Rayyan_Resume.pdf\"" },
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "Cache-Control", "value": "public, max-age=3600" }
       ]
