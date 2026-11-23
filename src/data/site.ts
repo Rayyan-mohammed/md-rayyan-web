@@ -7,8 +7,7 @@ export const site = {
   role: 'ML systems & evaluation',
   description:
     'MD Rayyan builds machine-learning systems and the evaluations that decide whether to trust them. Co-author of Argus (arXiv) and Obscuron (IEEE ICAESIS-2026).',
-  // TODO(confirm): the GitHub profile README uses a different address. Keep this until confirmed.
-  email: 'rayyan16522@gmail.com',
+  email: 'rayyan1652@gmail.com',
   location: 'Hyderabad, India',
   cv: '/resume.pdf',
   lastUpdated: '2026-11-23',
